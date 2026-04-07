@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1772240266553,
+      "tag": "0000_secret_jackpot",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775692800000,
+      "tag": "0001_add_totp_fields",
+      "breakpoints": true
+    }
+  ]
+}

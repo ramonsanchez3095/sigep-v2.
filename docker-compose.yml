@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sigep_v2_postgres
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: sigep_user
+      POSTGRES_PASSWORD: sigep_password_2024
+      POSTGRES_DB: sigep_v2
+    volumes:
+      - sigep_v2_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sigep_user -d sigep_v2']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sigep_v2_pgdata:
