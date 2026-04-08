@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "predev:e2e": "node ./scripts/free-port.mjs 3000",
     "dev:e2e": "next dev --webpack -H 127.0.0.1 -p 3000",
+    "setup:start": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\start.ps1",
+    "setup:start:no-start": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\start.ps1 -NoStart",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
