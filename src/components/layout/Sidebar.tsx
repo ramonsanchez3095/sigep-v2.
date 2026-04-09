@@ -42,14 +42,14 @@ const menuItems: MenuItem[] = [
     label: 'Dashboard',
     icon: Home,
     path: '/dashboard',
-    color: '#1e3a5f',
+    color: '#94a3b8', // Slate-400 for better visibility
   },
   {
     id: 'd1',
     label: 'D-1 Personal',
     icon: Users,
     path: '/d1',
-    color: '#1e3a5f',
+    color: '#60a5fa', // Blue-400 for better visibility
   },
   {
     id: 'd2',
@@ -70,7 +70,7 @@ const menuItems: MenuItem[] = [
     label: 'D-4 Logística',
     icon: Truck,
     path: '/d4',
-    color: '#2563eb',
+    color: '#3b82f6', // Blue-500 for better visibility
   },
   {
     id: 'd5',
@@ -84,7 +84,7 @@ const menuItems: MenuItem[] = [
     label: 'Asuntos Internos',
     icon: AlertTriangle,
     path: '/asuntos_internos',
-    color: '#1e40af',
+    color: '#818cf8', // Indigo-400 for better visibility
   },
   {
     id: 'delitos_rurales',
@@ -126,7 +126,7 @@ const menuItems: MenuItem[] = [
     label: 'Unidades Regionales',
     icon: MapPin,
     path: '/unidades_regionales',
-    color: '#475569',
+    color: '#94a3b8', // Slate-400 for better visibility
     children: [
       {
         id: 'ur_capital',
