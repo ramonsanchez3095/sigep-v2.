@@ -77,8 +77,9 @@ export function Configurar2FAContent() {
     try {
       const result = await confirmTotpSetup(fullCode);
       if (result.success) {
-        router.push('/dashboard');
-        router.refresh();
+        // En lugar de ir a /dashboard y crear un loop infinito por el token viejo
+        // forzamos el cierre de sesión o recarga total para obtener un token nuevo
+        window.location.href = '/api/auth/signout?callbackUrl=/login';
       } else {
         setError(result.error ?? 'Código incorrecto');
         setCode(['', '', '', '', '', '']);
@@ -89,6 +90,7 @@ export function Configurar2FAContent() {
     }
     setLoading(false);
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-policia-dark via-policia-primary to-policia-dark flex items-center justify-center p-4">

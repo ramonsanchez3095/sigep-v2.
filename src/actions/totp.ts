@@ -96,7 +96,12 @@ export async function confirmTotpSetup(code: string) {
 
   resetTotpRateLimit(`setup:${session.user.id}`);
 
-  return { success: true };
+  // Si no podemos actualizar el JWT de NextAuth de forma segura en una 
+  // server action (puede fallar), lo más seguro es forzar el logout 
+  // para que vuelva a iniciar sesión con 2FA habilitado.
+  // Pero NextAuth v5 permite auth() o update(). Vamos a importar `update` si podemos.
+  // En su defecto, indicamos éxito y el cliente mostrará un mensaje.
+  return { success: true, requireRelogin: true };
 }
 
 // ============================================

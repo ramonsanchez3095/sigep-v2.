@@ -209,6 +209,15 @@ else {
     Write-Step "Instalacion omitida (flag -SkipInstall)."
 }
 
+# 3b) Reparar archivos de jose corruptos/faltantes (problema OneDrive)
+Write-Step "Verificando integridad de modulos (patch-jose)..."
+node ./scripts/patch-jose.mjs
+if ($LASTEXITCODE -ne 0) {
+    Write-Warn "patch-jose.mjs fallo, continuando de todas formas..."
+} else {
+    Write-Ok "Modulos verificados."
+}
+
 # 4) Levantar PostgreSQL
 Write-Step "Levantando PostgreSQL con Docker Compose..."
 Invoke-Compose -ComposeArgs @("up", "-d", "postgres")
