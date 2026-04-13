@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import Link from 'next/link';
+import { DivisionBrand } from '@/components/branding/DivisionBrand';
 
 interface HeaderProps {
   userNombre: string;
@@ -54,13 +55,13 @@ export function Header({
 
       <header
         className={clsx(
-          'fixed right-0 h-16 bg-white border-b border-gray-200 z-40 flex items-center justify-between px-6 transition-all duration-300',
+          'fixed right-0 h-16 border-b border-gray-200/80 bg-white/88 backdrop-blur-md shadow-[0_10px_28px_rgba(15,29,48,0.06)] z-40 flex items-center justify-between px-4 lg:px-6 transition-all duration-300',
           edicionHabilitada ? 'top-10' : 'top-0'
         )}
         style={{ left: sidebarOpen ? '288px' : '80px' }}
       >
         {/* Lado izquierdo */}
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 items-center gap-3 lg:gap-4">
           <button
             onClick={toggleSidebar}
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden"
@@ -68,11 +69,13 @@ export function Header({
             <Menu size={20} className="text-gray-600" />
           </button>
 
-          <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
+          <DivisionBrand variant="header" className="max-w-[26rem]" />
+
+          <div className="flex min-w-0 items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50/90 px-3 py-2 shadow-sm lg:px-4">
             <Calendar size={18} className="text-policia-primary" />
-            <div className="text-sm">
+            <div className="min-w-0 text-sm">
               <span className="text-gray-500">Período comparativo: </span>
-              <span className="font-medium text-gray-700">
+              <span className="font-medium text-gray-700 truncate">
                 {periodoAnteriorLabel} vs {periodoActualLabel}
               </span>
             </div>
@@ -80,7 +83,7 @@ export function Header({
         </div>
 
         {/* Lado derecho */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 lg:gap-3">
           {esSuperAdmin && (
             <>
               <Link

@@ -22,10 +22,10 @@ import {
   GraduationCap,
   MapPin,
   Home,
-  BarChart3,
   type LucideIcon,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { DivisionBrand } from '@/components/branding/DivisionBrand';
 
 interface MenuItem {
   id: string;
@@ -209,43 +209,39 @@ export function Sidebar({
       )}
     >
       {/* Logo y toggle */}
-      <div className="flex items-center justify-between p-4 border-b border-white/10">
+      <div className="border-b border-white/10 p-4">
         <div
           className={clsx(
-            'flex items-center gap-3',
-            !sidebarOpen && 'justify-center w-full'
+            'flex items-start gap-3',
+            !sidebarOpen && 'justify-center'
           )}
         >
-          <div className="w-10 h-10 bg-policia-secondary rounded-full flex items-center justify-center font-bold text-policia-primary shrink-0">
-            <BarChart3 size={24} />
-          </div>
+          <DivisionBrand
+            collapsed={!sidebarOpen}
+            className={clsx('animate-fadeIn', sidebarOpen ? 'w-full' : 'w-auto')}
+          />
+
           {sidebarOpen && (
-            <div className="animate-fadeIn">
-              <h1 className="font-bold text-lg leading-tight">SIGEP</h1>
-              <p className="text-xs text-white/70">Policía de Tucumán</p>
-            </div>
+            <button
+              onClick={toggleSidebar}
+              className="rounded-2xl border border-white/10 bg-white/5 p-2 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              title="Contraer menú lateral"
+            >
+              <X size={20} />
+            </button>
           )}
         </div>
-        <button
-          onClick={toggleSidebar}
-          className={clsx(
-            'p-2 rounded-lg hover:bg-white/10 transition-colors',
-            !sidebarOpen && 'hidden'
-          )}
-        >
-          <X size={20} />
-        </button>
-      </div>
 
-      {/* Botón expandir cuando está colapsado */}
-      {!sidebarOpen && (
-        <button
-          onClick={toggleSidebar}
-          className="p-4 hover:bg-white/10 transition-colors"
-        >
-          <Menu size={24} />
-        </button>
-      )}
+        {!sidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="mt-3 flex w-full items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+            title="Expandir menú lateral"
+          >
+            <Menu size={22} />
+          </button>
+        )}
+      </div>
 
       {/* Menú de navegación */}
       <nav className="flex-1 overflow-y-auto scrollbar-thin py-4">

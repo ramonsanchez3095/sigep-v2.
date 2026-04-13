@@ -8,6 +8,7 @@ import {
   PieChartComponent,
   ChartContainer,
 } from '@/components/charts/Charts';
+import { DivisionBrand } from '@/components/branding/DivisionBrand';
 import { Home, TrendingUp, Database, BarChart3 } from 'lucide-react';
 
 interface DeptData {
@@ -66,6 +67,8 @@ export function DashboardContent({
 
   return (
     <div>
+      <DivisionBrand variant="hero" className="mb-8" />
+
       <PageHeader
         titulo="Dashboard General"
         subtitulo={`Resumen comparativo ${periodoAnteriorLabel} vs ${periodoActualLabel}`}
