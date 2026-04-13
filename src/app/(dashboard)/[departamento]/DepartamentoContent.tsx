@@ -67,6 +67,11 @@ const ICON_MAP: Record<string, LucideIcon> = {
   unidades_regionales: MapPin,
 };
 
+// Escudos institucionales disponibles por departamento
+const SHIELD_MAP: Record<string, string> = {
+  d1: '/shields/d1.png',
+};
+
 const COLORS_PALETTE = [
   '#1e3a5f',
   '#0ea5e9',
@@ -135,6 +140,7 @@ export function DepartamentoContent({
   }, [tablasState]);
 
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
+  const shieldImg = SHIELD_MAP[departamento.codigo];
 
   // Aplanar todas las filas para export
   const todasLasFilas = tablasState.flatMap(t => t.datos);
@@ -145,7 +151,20 @@ export function DepartamentoContent({
         titulo={departamento.nombre}
         subtitulo="Datos estadísticos comparativos"
         color={departamento.color}
-        icon={<Icon size={24} />}
+        icon={
+          shieldImg ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={shieldImg}
+              alt={departamento.nombre}
+              width={28}
+              height={28}
+              className="object-contain"
+            />
+          ) : (
+            <Icon size={24} />
+          )
+        }
       >
         <ExportButtons
           titulo={departamento.nombre}
@@ -154,6 +173,25 @@ export function DepartamentoContent({
           periodo={`${periodoAnteriorLabel} vs ${periodoActualLabel}`}
         />
       </PageHeader>
+
+      {/* Escudo del departamento (si existe) */}
+      {shieldImg && (
+        <div className="flex justify-center mb-8">
+          <div className="flex flex-col items-center gap-3 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={shieldImg}
+              alt={`Escudo ${departamento.nombre}`}
+              width={180}
+              height={200}
+              className="object-contain drop-shadow-md"
+            />
+            <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider">
+              {departamento.nombre}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Stats resumen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

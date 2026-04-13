@@ -31,6 +31,7 @@ interface MenuItem {
   id: string;
   label: string;
   icon: LucideIcon;
+  shieldImg?: string; // ruta relativa a /public, ej: '/shields/d1.png'
   path: string;
   color: string;
   children?: { id: string; label: string; path: string; color: string }[];
@@ -48,6 +49,7 @@ const menuItems: MenuItem[] = [
     id: 'd1',
     label: 'D-1 Personal',
     icon: Users,
+    shieldImg: '/shields/d1.png',
     path: '/d1',
     color: '#60a5fa', // Blue-400 for better visibility
   },
@@ -300,7 +302,18 @@ export function Sidebar({
                       : '4px solid transparent',
                   }}
                 >
-                  <Icon size={20} style={{ color: item.color }} />
+                  {item.shieldImg ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.shieldImg}
+                      alt={item.label}
+                      width={22}
+                      height={22}
+                      className="shrink-0 object-contain"
+                    />
+                  ) : (
+                    <Icon size={20} style={{ color: item.color }} />
+                  )}
                   {sidebarOpen && (
                     <span className="flex-1 text-left text-sm">
                       {item.label}
