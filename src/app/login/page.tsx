@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loginAction } from '@/actions/auth';
-import { verifyTotpLogin } from '@/actions/totp';
+import { recoverTotpAccess, verifyTotpLogin } from '@/actions/totp';
 import { Eye, EyeOff, Lock, User, BarChart3, Shield, KeyRound, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
@@ -18,7 +18,19 @@ export default function LoginPage() {
   const [requires2fa, setRequires2fa] = useState(false);
   const [userId2fa, setUserId2fa] = useState('');
   const [totpCode, setTotpCode] = useState(['', '', '', '', '', '']);
+  const [localRecoveryAvailable, setLocalRecoveryAvailable] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    setLocalRecoveryAvailable(
+      window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+    );
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +118,34 @@ export default function LoginPage() {
     setUserId2fa('');
     setTotpCode(['', '', '', '', '', '']);
     setError('');
+  };
+
+  const handleRecover2fa = async () => {
+    const confirmed = window.confirm(
+      'Esto restablecera el 2FA de este usuario en el entorno local y le permitira volver a generar el QR. ¿Desea continuar?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = await recoverTotpAccess(username, password);
+
+      if (result.success) {
+        window.location.href = result.redirectTo;
+        return;
+      }
+
+      setError(result.error ?? 'No se pudo recuperar el acceso 2FA.');
+    } catch {
+      setError('Error al recuperar el acceso 2FA.');
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -201,6 +241,25 @@ export default function LoginPage() {
                 <ArrowLeft size={16} />
                 Volver al inicio de sesión
               </button>
+
+              {localRecoveryAvailable ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-left">
+                  <p className="text-sm font-medium text-amber-900">
+                    Recuperación local visible
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-amber-800">
+                    Si perdió el QR o cambió de dispositivo, puede restablecer el 2FA localmente y volver a generar un nuevo código QR sin tocar la base manualmente.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleRecover2fa}
+                    disabled={loading}
+                    className="mt-3 inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    Regenerar acceso y volver al QR
+                  </button>
+                </div>
+              ) : null}
             </div>
           ) : (
             <div className="space-y-5">

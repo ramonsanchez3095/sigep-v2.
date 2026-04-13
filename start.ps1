@@ -125,6 +125,65 @@ function Test-SigepNextProcess {
     return $commandLine.Contains($workspacePath) -and $commandLine.Contains("next")
 }
 
+function Get-NextLocalCachePath {
+    $basePath = if (-not [string]::IsNullOrWhiteSpace($env:LOCALAPPDATA)) {
+        $env:LOCALAPPDATA
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($env:TEMP)) {
+        $env:TEMP
+    }
+    else {
+        $PSScriptRoot
+    }
+
+    return Join-Path (Join-Path $basePath "SIGEP-v2") "next-dev-cache"
+}
+
+function Ensure-NextJunctionForOneDrive {
+    if (-not $script:IsOneDrivePath -or $Prod) {
+        return
+    }
+
+    $workspaceNextPath = Join-Path $PSScriptRoot ".next"
+    $cachePath = Get-NextLocalCachePath
+    $cacheParent = Split-Path $cachePath -Parent
+
+    if (-not (Test-Path $cacheParent)) {
+        New-Item -ItemType Directory -Path $cacheParent -Force | Out-Null
+    }
+
+    if (-not (Test-Path $cachePath)) {
+        New-Item -ItemType Directory -Path $cachePath -Force | Out-Null
+    }
+
+    if (Test-Path $workspaceNextPath) {
+        $nextItem = Get-Item $workspaceNextPath -Force -ErrorAction SilentlyContinue
+
+        if ($null -ne $nextItem -and $nextItem.LinkType -eq "Junction") {
+            $null = cmd /c "rmdir `"$workspaceNextPath`"" 2>$null
+        }
+        else {
+            Remove-Item $workspaceNextPath -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        if (Test-Path $workspaceNextPath) {
+            Remove-Item $workspaceNextPath -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        if (Test-Path $workspaceNextPath) {
+            Write-Fail "No se pudo limpiar .next antes de iniciar Next.js. Cerra procesos que esten usando la carpeta y reintenta."
+        }
+    }
+
+    cmd /c "mklink /J `"$workspaceNextPath`" `"$cachePath`"" *> $null
+
+    if (-not (Test-Path $workspaceNextPath)) {
+        Write-Fail "No se pudo crear el enlace local de .next fuera de OneDrive."
+    }
+
+    Write-Ok "Cache de Next.js reubicado fuera de OneDrive: $cachePath"
+}
+
 # 1) Verificar prerequisitos
 Write-Step "Verificando prerequisitos..."
 
@@ -346,6 +405,8 @@ else {
             Write-Fail "El puerto 3000 ya esta en uso por $($portOwner.Name) (PID $($portOwner.ProcessId)). Liberalo y volve a ejecutar start.cmd."
         }
     }
+
+    Ensure-NextJunctionForOneDrive
 
     $nextLockPath = Join-Path $PSScriptRoot ".next\dev\lock"
     if (Test-Path $nextLockPath) {

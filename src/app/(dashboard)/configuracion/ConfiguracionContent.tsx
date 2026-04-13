@@ -13,6 +13,7 @@ import {
   Eye,
   Edit3,
   KeyRound,
+  CalendarRange,
 } from 'lucide-react';
 import {
   crearPeriodo,
@@ -24,7 +25,11 @@ import { resetTotpUsuario } from '@/actions/totp';
 
 interface Periodo {
   id: string;
+  anteriorInicio: Date;
+  anteriorFin: Date;
   anteriorLabel: string;
+  actualInicio: Date;
+  actualFin: Date;
   actualLabel: string;
   activo: boolean;
   createdAt: Date;
@@ -65,18 +70,53 @@ const rolColors: Record<string, string> = {
   VIEWER: 'bg-gray-100 text-gray-600',
 };
 
+const MESES = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
+
+function getPeriodoMesEstadisticoDefaults() {
+  const ahora = new Date();
+  const actualMes = ahora.getMonth() + 1;
+  const actualAnio = ahora.getFullYear();
+  const fechaAnterior = new Date(actualAnio, ahora.getMonth() - 1, 1);
+
+  return {
+    actualMes,
+    actualAnio,
+    anteriorMes: fechaAnterior.getMonth() + 1,
+    anteriorAnio: fechaAnterior.getFullYear(),
+  };
+}
+
 export function ConfiguracionContent({
   periodos,
   usuarios,
   departamentos,
 }: Props) {
+  const periodoMesEstadisticoDefaults = getPeriodoMesEstadisticoDefaults();
   const [tab, setTab] = useState<'periodos' | 'usuarios'>('periodos');
   const [isPending, startTransition] = useTransition();
 
   // Nuevo período
   const [showNuevoPeriodo, setShowNuevoPeriodo] = useState(false);
+  const [modoPeriodo, setModoPeriodo] = useState<'manual' | 'mes-estadistico'>('mes-estadistico');
   const [periodoAnt, setPeriodoAnt] = useState('');
   const [periodoAct, setPeriodoAct] = useState('');
+  const [anteriorMes, setAnteriorMes] = useState(periodoMesEstadisticoDefaults.anteriorMes);
+  const [anteriorAnio, setAnteriorAnio] = useState(periodoMesEstadisticoDefaults.anteriorAnio);
+  const [actualMes, setActualMes] = useState(periodoMesEstadisticoDefaults.actualMes);
+  const [actualAnio, setActualAnio] = useState(periodoMesEstadisticoDefaults.actualAnio);
 
   // Nuevo usuario
   const [showNuevoUsuario, setShowNuevoUsuario] = useState(false);
@@ -88,18 +128,63 @@ export function ConfiguracionContent({
     departamentoId: '',
   });
 
-  const handleCrearPeriodo = () => {
-    if (!periodoAnt.trim() || !periodoAct.trim()) return;
-    startTransition(async () => {
-      await crearPeriodo({
-        periodoAnterior: periodoAnt,
-        periodoActual: periodoAct,
-      });
-      setPeriodoAnt('');
-      setPeriodoAct('');
+  const resetPeriodoForm = () => {
+    const defaults = getPeriodoMesEstadisticoDefaults();
+    setModoPeriodo('mes-estadistico');
+    setPeriodoAnt('');
+    setPeriodoAct('');
+    setAnteriorMes(defaults.anteriorMes);
+    setAnteriorAnio(defaults.anteriorAnio);
+    setActualMes(defaults.actualMes);
+    setActualAnio(defaults.actualAnio);
+  };
+
+  const handleToggleNuevoPeriodo = () => {
+    if (showNuevoPeriodo) {
       setShowNuevoPeriodo(false);
+      return;
+    }
+
+    resetPeriodoForm();
+    setShowNuevoPeriodo(true);
+  };
+
+  const handleCloseNuevoPeriodo = () => {
+    resetPeriodoForm();
+    setShowNuevoPeriodo(false);
+  };
+
+  const handleCrearPeriodo = () => {
+    startTransition(async () => {
+      if (modoPeriodo === 'manual') {
+        if (!periodoAnt.trim() || !periodoAct.trim()) return;
+        await crearPeriodo({
+          modo: 'manual',
+          periodoAnterior: periodoAnt,
+          periodoActual: periodoAct,
+        });
+      } else {
+        await crearPeriodo({
+          modo: 'mes-estadistico',
+          anteriorMes,
+          anteriorAnio,
+          actualMes,
+          actualAnio,
+        });
+      }
+
+      handleCloseNuevoPeriodo();
     });
   };
+
+  const formatFecha = (fecha: Date) =>
+    new Date(fecha).toLocaleDateString('es-AR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
+  const previewMesEstadistico = `Mes estadístico ${MESES[anteriorMes - 1]} ${anteriorAnio} vs Mes estadístico ${MESES[actualMes - 1]} ${actualAnio}`;
 
   const handleActivar = (id: string) => {
     startTransition(async () => {
@@ -181,7 +266,7 @@ export function ConfiguracionContent({
               Períodos Comparativos
             </h2>
             <button
-              onClick={() => setShowNuevoPeriodo(!showNuevoPeriodo)}
+              onClick={handleToggleNuevoPeriodo}
               className="btn-primary flex items-center gap-2 text-sm"
             >
               <Plus size={16} />
@@ -191,35 +276,128 @@ export function ConfiguracionContent({
 
           {showNuevoPeriodo && (
             <div className="card p-4 mb-4 border-2 border-policia-secondary">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Período Anterior
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field w-full"
-                    placeholder="Ej: Enero 2024"
-                    value={periodoAnt}
-                    onChange={e => setPeriodoAnt(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Período Actual
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field w-full"
-                    placeholder="Ej: Febrero 2024"
-                    value={periodoAct}
-                    onChange={e => setPeriodoAct(e.target.value)}
-                  />
-                </div>
+              <div className="mb-4 flex flex-wrap gap-2 rounded-lg bg-gray-100 p-1 w-fit">
+                <button
+                  onClick={() => setModoPeriodo('mes-estadistico')}
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    modoPeriodo === 'mes-estadistico'
+                      ? 'bg-white text-policia-primary shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <CalendarRange size={16} />
+                  Mes estadístico
+                </button>
+                <button
+                  onClick={() => setModoPeriodo('manual')}
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    modoPeriodo === 'manual'
+                      ? 'bg-white text-policia-primary shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <Edit3 size={16} />
+                  Etiqueta manual
+                </button>
               </div>
+
+              {modoPeriodo === 'mes-estadistico' ? (
+                <>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                    <div className="rounded-xl border border-gray-200 p-4 bg-gray-50/80">
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Mes estadístico anterior
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <select
+                          className="input-field w-full"
+                          value={anteriorMes}
+                          onChange={e => setAnteriorMes(Number(e.target.value))}
+                        >
+                          {MESES.map((mes, index) => (
+                            <option key={mes} value={index + 1}>
+                              {mes}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          className="input-field w-full"
+                          min={2000}
+                          max={2100}
+                          value={anteriorAnio}
+                          onChange={e => setAnteriorAnio(Number(e.target.value) || new Date().getFullYear())}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-gray-200 p-4 bg-gray-50/80">
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Mes estadístico actual
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <select
+                          className="input-field w-full"
+                          value={actualMes}
+                          onChange={e => setActualMes(Number(e.target.value))}
+                        >
+                          {MESES.map((mes, index) => (
+                            <option key={mes} value={index + 1}>
+                              {mes}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          className="input-field w-full"
+                          min={2000}
+                          max={2100}
+                          value={actualAnio}
+                          onChange={e => setActualAnio(Number(e.target.value) || new Date().getFullYear())}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-dashed border-policia-secondary/50 bg-policia-secondary/5 px-4 py-3 mb-4">
+                    <p className="text-sm font-medium text-gray-700">
+                      Comparación a crear
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">{previewMesEstadistico}</p>
+                  </div>
+                </>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Período Anterior
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field w-full"
+                      placeholder="Ej: Gestión 2025"
+                      value={periodoAnt}
+                      onChange={e => setPeriodoAnt(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Período Actual
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field w-full"
+                      placeholder="Ej: Gestión 2026"
+                      value={periodoAct}
+                      onChange={e => setPeriodoAct(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-2 justify-end">
                 <button
-                  onClick={() => setShowNuevoPeriodo(false)}
+                  onClick={handleCloseNuevoPeriodo}
                   className="btn-secondary text-sm"
                 >
                   Cancelar
@@ -255,6 +433,11 @@ export function ConfiguracionContent({
                     <span className="text-sm font-medium text-gray-800">
                       {p.actualLabel}
                     </span>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {formatFecha(p.anteriorInicio)} al {formatFecha(p.anteriorFin)}
+                      {' · '}
+                      {formatFecha(p.actualInicio)} al {formatFecha(p.actualFin)}
+                    </p>
                   </div>
                   <span className="text-xs text-gray-400">
                     {new Date(p.createdAt).toLocaleDateString('es-AR')}

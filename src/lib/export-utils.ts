@@ -105,3 +105,111 @@ export function buildExcelSheetData(
 
   return rows;
 }
+
+// ============================================
+// ESTADÍSTICAS — Exportación
+// ============================================
+
+export interface EstadisticasExportContext {
+  escala: string;
+  filtros: string;
+  generatedAt?: Date;
+}
+
+export interface EstadisticasFila {
+  nombre: string;
+  [key: string]: string | number;
+}
+
+export function buildEstadisticasPdfData(
+  datos: EstadisticasFila[],
+  columnas: string[]
+): string[][] {
+  return datos.map(fila =>
+    columnas.map(col => {
+      const val = fila[col];
+      if (val == null) return '-';
+      if (typeof val === 'number') {
+        return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 }).format(val);
+      }
+      return String(val);
+    })
+  );
+}
+
+export interface EstadisticasExcelSheet {
+  nombre: string;
+  datos: Array<Array<string | number>>;
+}
+
+export function buildEstadisticasExcelData(
+  context: EstadisticasExportContext,
+  datos: EstadisticasFila[],
+  columnas: string[],
+  kpis?: Record<string, string | number>,
+  yoyDatos?: EstadisticasFila[],
+  yoyColumnas?: string[],
+  proyeccionDatos?: EstadisticasFila[]
+): EstadisticasExcelSheet[] {
+  const generatedAt = context.generatedAt ?? new Date();
+  const sheets: EstadisticasExcelSheet[] = [];
+
+  // Hoja 1: Resumen KPIs
+  if (kpis) {
+    const resumenRows: Array<Array<string | number>> = [
+      ['SIGEP - Estadísticas'],
+      [`Escala: ${context.escala}`],
+      [`Filtros: ${context.filtros || 'Ninguno'}`],
+      [`Generado: ${generatedAt.toLocaleDateString('es-AR')}`],
+      [],
+      ['Indicador', 'Valor'],
+    ];
+    for (const [key, val] of Object.entries(kpis)) {
+      resumenRows.push([key, val]);
+    }
+    sheets.push({ nombre: 'Resumen', datos: resumenRows });
+  }
+
+  // Hoja 2: Datos según escala
+  const datosRows: Array<Array<string | number>> = [columnas];
+  for (const fila of datos) {
+    datosRows.push(
+      columnas.map(col => {
+        const val = fila[col];
+        return val != null ? val : '';
+      })
+    );
+  }
+  sheets.push({ nombre: 'Datos', datos: datosRows });
+
+  // Hoja 3: YoY (si aplica)
+  if (yoyDatos && yoyColumnas) {
+    const yoyRows: Array<Array<string | number>> = [yoyColumnas];
+    for (const fila of yoyDatos) {
+      yoyRows.push(
+        yoyColumnas.map(col => {
+          const val = fila[col];
+          return val != null ? val : '';
+        })
+      );
+    }
+    sheets.push({ nombre: 'Comparativa YoY', datos: yoyRows });
+  }
+
+  // Hoja 4: Proyección (si aplica)
+  if (proyeccionDatos) {
+    const proyRows: Array<Array<string | number>> = [
+      ['Período', 'Valor', 'Tipo'],
+    ];
+    for (const fila of proyeccionDatos) {
+      proyRows.push([
+        fila.nombre,
+        typeof fila.valor === 'number' ? fila.valor : 0,
+        String(fila.tipo ?? ''),
+      ]);
+    }
+    sheets.push({ nombre: 'Proyección', datos: proyRows });
+  }
+
+  return sheets;
+}

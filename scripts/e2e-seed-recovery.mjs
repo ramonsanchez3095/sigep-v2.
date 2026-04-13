@@ -42,6 +42,8 @@ WITH superadmin_upsert AS (
       color = EXCLUDED.color,
       activo = true,
       departamento_id = NULL,
+      totp_enabled = false,
+      totp_secret = NULL,
       updated_at = NOW()
   RETURNING id
 ), superadmin_row AS (

@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import clsx from 'clsx';
-import { DivisionSeal } from '@/components/branding/DivisionSeal';
 
 interface DivisionBrandProps {
   variant?: 'hero' | 'sidebar' | 'header';
@@ -9,6 +9,7 @@ interface DivisionBrandProps {
 
 const divisionTitle = 'División Centro de Análisis Estratégico';
 const sectionTitle = 'Sección Análisis de Información Delictual';
+const sectionSealSrc = '/ESCUDOSECCION.png';
 
 export function DivisionBrand({
   variant = 'sidebar',
@@ -29,7 +30,13 @@ export function DivisionBrand({
 
         <div className="relative flex flex-col items-center gap-6 text-center lg:flex-row lg:items-center lg:gap-8 lg:text-left">
           <div className="shrink-0 rounded-[28px] bg-white/8 p-2.5 backdrop-blur-sm shadow-[0_18px_35px_rgba(0,0,0,0.18)] ring-1 ring-white/10">
-            <DivisionSeal className="h-28 w-28 sm:h-36 sm:w-36 lg:h-40 lg:w-40" />
+            <Image
+              src={sectionSealSrc}
+              alt="Escudo institucional de la sección"
+              width={160}
+              height={160}
+              className="h-28 w-28 object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] sm:h-36 sm:w-36 lg:h-40 lg:w-40"
+            />
           </div>
 
           <div className="max-w-4xl">
@@ -63,7 +70,13 @@ export function DivisionBrand({
         )}
       >
         <div className="rounded-2xl bg-white p-1 shadow-[0_8px_18px_rgba(15,29,48,0.08)] ring-1 ring-[#d7ad45]/20">
-          <DivisionSeal className="h-11 w-11" />
+          <Image
+            src={sectionSealSrc}
+            alt="Escudo institucional de la sección"
+            width={44}
+            height={44}
+            className="h-11 w-11 object-contain"
+          />
         </div>
         <div className="min-w-0">
           <p className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8a7340]">
@@ -82,7 +95,13 @@ export function DivisionBrand({
     return (
       <div className={clsx('flex items-center justify-center', className)}>
         <div className="rounded-[22px] bg-white/8 p-1.5 shadow-[0_12px_24px_rgba(0,0,0,0.2)] ring-1 ring-white/10 backdrop-blur-sm">
-          <DivisionSeal className="h-11 w-11" />
+          <Image
+            src={sectionSealSrc}
+            alt="Escudo institucional de la sección"
+            width={44}
+            height={44}
+            className="h-11 w-11 object-contain"
+          />
         </div>
       </div>
     );
@@ -97,7 +116,13 @@ export function DivisionBrand({
     >
       <div className="flex items-center gap-3">
         <div className="shrink-0 rounded-[22px] bg-white/8 p-1.5 ring-1 ring-white/10">
-          <DivisionSeal className="h-12 w-12" />
+          <Image
+            src={sectionSealSrc}
+            alt="Escudo institucional de la sección"
+            width={48}
+            height={48}
+            className="h-12 w-12 object-contain"
+          />
         </div>
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f2d47c]">

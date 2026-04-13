@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 import * as schema from './schema';
+import { createD1SeedTables } from '../lib/d1-definition';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -217,110 +218,7 @@ type TablaData = {
 };
 
 const allTablas: Record<string, TablaData[]> = {
-  d1: [
-    {
-      tablaId: 'd1-total-personal-policial',
-      nombre: 'Total de Personal Policial',
-      datos: [
-        {
-          filaId: 'fuerza_efectiva',
-          label: 'FUERZA EFECTIVA',
-          periodoAnterior: 11287,
-          periodoActual: 12186,
-        },
-        {
-          filaId: 'poblacion',
-          label: 'POBLACIÓN SEGÚN CENSO 2022',
-          periodoAnterior: 1731820,
-          periodoActual: 1731820,
-        },
-        {
-          filaId: 'densidad',
-          label: 'DENSIDAD POLICIAL',
-          periodoAnterior: 0.65,
-          periodoActual: 0.7,
-        },
-      ],
-    },
-    {
-      tablaId: 'd1-personal-por-tipo',
-      nombre: 'Personal por Tipo',
-      datos: [
-        {
-          filaId: 'superior',
-          label: 'PERSONAL SUPERIOR',
-          periodoAnterior: 1087,
-          periodoActual: 1178,
-        },
-        {
-          filaId: 'subalterno',
-          label: 'PERSONAL SUBALTERNO',
-          periodoAnterior: 10200,
-          periodoActual: 11008,
-        },
-      ],
-    },
-    {
-      tablaId: 'd1-personal-por-genero',
-      nombre: 'Personal por Género',
-      datos: [
-        {
-          filaId: 'masculino',
-          label: 'MASCULINO',
-          periodoAnterior: 8616,
-          periodoActual: 9334,
-        },
-        {
-          filaId: 'femenino',
-          label: 'FEMENINO',
-          periodoAnterior: 2661,
-          periodoActual: 2854,
-        },
-      ],
-    },
-    {
-      tablaId: 'd1-oficiales-superiores',
-      nombre: 'Oficiales Superiores',
-      datos: [
-        {
-          filaId: 'comisario_general',
-          label: 'Comisario General',
-          periodoAnterior: 5,
-          periodoActual: 5,
-        },
-        {
-          filaId: 'comisario_mayor',
-          label: 'Comisario Mayor',
-          periodoAnterior: 24,
-          periodoActual: 26,
-        },
-        {
-          filaId: 'comisario_inspector',
-          label: 'Comisario Inspector',
-          periodoAnterior: 67,
-          periodoActual: 72,
-        },
-      ],
-    },
-    {
-      tablaId: 'd1-oficiales-jefes',
-      nombre: 'Oficiales Jefes',
-      datos: [
-        {
-          filaId: 'comisario',
-          label: 'Comisario',
-          periodoAnterior: 138,
-          periodoActual: 148,
-        },
-        {
-          filaId: 'subcomisario',
-          label: 'Subcomisario',
-          periodoAnterior: 208,
-          periodoActual: 223,
-        },
-      ],
-    },
-  ],
+  d1: createD1SeedTables(),
   d3: [
     {
       tablaId: 'd3-delitos-propiedad',
@@ -657,15 +555,44 @@ const allTablas: Record<string, TablaData[]> = {
   ],
 };
 
+const tablasInicialesEnCero: Record<string, TablaData[]> = Object.fromEntries(
+  Object.entries(allTablas).map(([deptCodigo, tablas]) => [
+    deptCodigo,
+    tablas.map(tabla => ({
+      ...tabla,
+      datos: tabla.datos.map(dato => ({
+        ...dato,
+        periodoAnterior: 0,
+        periodoActual: 0,
+      })),
+    })),
+  ])
+);
+
 async function seed() {
   const pool = new Pool({ connectionString: DATABASE_URL });
   const db = drizzle(pool, { schema });
+  const ahora = new Date();
+  const anioActual = ahora.getFullYear();
+  const anioAnterior = anioActual - 1;
+  const periodoInicial = {
+    anteriorInicio: new Date(anioAnterior, 0, 1),
+    anteriorFin: new Date(anioAnterior, 11, 31, 23, 59, 59),
+    anteriorLabel: `Período anterior ${anioAnterior}`,
+    actualInicio: new Date(anioActual, 0, 1),
+    actualFin: new Date(anioActual, 11, 31, 23, 59, 59),
+    actualLabel: `Período actual ${anioActual}`,
+    activo: true,
+  };
 
   console.log('🌱 Iniciando seed de la base de datos SIGEP v2...\n');
 
   try {
     // Limpiar tablas en orden correcto
     console.log('🧹 Limpiando datos existentes...');
+    await pool.query('DELETE FROM estadisticas_anuales');
+    await pool.query('DELETE FROM estadisticas_mensuales');
+    await pool.query('DELETE FROM estadisticas_diarias');
     await pool.query('DELETE FROM historial_cambios');
     await pool.query('DELETE FROM snapshots');
     await pool.query('DELETE FROM datos_comparativos');
@@ -680,15 +607,7 @@ async function seed() {
     // Config global
     console.log('⚙️ Creando configuración global...');
     await db.insert(schema.configGlobal).values({ edicionHabilitada: false });
-    await db.insert(schema.configPeriodos).values({
-      anteriorInicio: new Date('2024-01-01'),
-      anteriorFin: new Date('2024-07-31'),
-      anteriorLabel: '01/01/24 - 31/07/24',
-      actualInicio: new Date('2025-01-01'),
-      actualFin: new Date('2025-07-31'),
-      actualLabel: '01/01/25 - 31/07/25',
-      activo: true,
-    });
+    await db.insert(schema.configPeriodos).values(periodoInicial);
 
     // Departamentos
     console.log('🏢 Creando departamentos...');
@@ -734,7 +653,7 @@ async function seed() {
     }
 
     // Tablas y datos comparativos por departamento
-    for (const [deptCodigo, tablas] of Object.entries(allTablas)) {
+    for (const [deptCodigo, tablas] of Object.entries(tablasInicialesEnCero)) {
       const deptId = deptMap.get(deptCodigo);
       if (!deptId) continue;
       console.log(`\n📊 Creando tablas ${deptCodigo}...`);

@@ -122,6 +122,8 @@ export async function guardarDatosComparativosWithDeps(
 
   if (!tabla) throw new Error('Tabla no encontrada');
 
+  const departamentoId = tabla.departamentoId;
+
   for (const fila of parsed.filas) {
     // Obtener dato anterior para historial
     const [datoAnterior] = await deps.database
@@ -176,6 +178,11 @@ export async function guardarDatosComparativosWithDeps(
   }
 
   deps.revalidate('/');
+
+  // Fire-and-forget: agregar estadística diaria tras guardar
+  import('./agregacion').then(({ agregarEstadisticaDiaria }) =>
+    agregarEstadisticaDiaria(deps.database, departamentoId, parsed.tablaConfigId).catch(() => {})
+  );
 }
 
 export async function guardarDatosComparativos(

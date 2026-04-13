@@ -5,6 +5,7 @@ import { usuarios } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { auth, signIn } from '@/lib/auth';
 import { AuthError } from 'next-auth';
+import bcrypt from 'bcryptjs';
 import {
   generateTotpSecret,
   generateQrDataUrl,
@@ -15,6 +16,7 @@ import {
   resetTotpRateLimit,
 } from '@/lib/totp';
 import {
+  loginActionSchema,
   totpCodeSchema,
   verifyTotpLoginSchema,
   parseOrThrow,
@@ -161,6 +163,85 @@ export async function verifyTotpLogin(
     if (error instanceof AuthError) {
       return { success: false, error: 'Error al iniciar sesión' };
     }
+    throw error;
+  }
+}
+
+// ============================================
+// Recuperación local visible de 2FA
+// ============================================
+
+export async function recoverTotpAccess(username: string, password: string) {
+  const recoveryAllowed =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.ENABLE_TOTP_LOCAL_RECOVERY === 'true';
+
+  if (!recoveryAllowed) {
+    return {
+      success: false as const,
+      error: 'La recuperación visible de 2FA no está habilitada en este entorno.',
+    };
+  }
+
+  const parsed = parseOrThrow(loginActionSchema, { username, password });
+
+  const [user] = await db
+    .select({
+      id: usuarios.id,
+      activo: usuarios.activo,
+      passwordHash: usuarios.passwordHash,
+      totpEnabled: usuarios.totpEnabled,
+    })
+    .from(usuarios)
+    .where(eq(usuarios.username, parsed.username))
+    .limit(1);
+
+  if (!user || !user.activo) {
+    return {
+      success: false as const,
+      error: 'Usuario o contraseña incorrectos.',
+    };
+  }
+
+  const passwordMatch = await bcrypt.compare(parsed.password, user.passwordHash);
+  if (!passwordMatch) {
+    return {
+      success: false as const,
+      error: 'Usuario o contraseña incorrectos.',
+    };
+  }
+
+  await db
+    .update(usuarios)
+    .set({
+      totpEnabled: false,
+      totpSecret: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(usuarios.id, user.id));
+
+  resetTotpRateLimit(`login:${user.id}`);
+  resetTotpRateLimit(`setup:${user.id}`);
+
+  try {
+    await signIn('credentials', {
+      username: parsed.username,
+      password: parsed.password,
+      redirect: false,
+    });
+
+    return {
+      success: true as const,
+      redirectTo: '/configurar-2fa',
+    };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return {
+        success: false as const,
+        error: 'No se pudo restablecer la sesión luego de recuperar el 2FA.',
+      };
+    }
+
     throw error;
   }
 }

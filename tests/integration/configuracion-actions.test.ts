@@ -73,6 +73,7 @@ describe('configuracion actions integration', () => {
         hashPassword: async password => `hash:${password}`,
       },
       {
+        modo: 'manual',
         periodoAnterior: 'Febrero 2024',
         periodoActual: 'Febrero 2025',
       }
@@ -97,12 +98,39 @@ describe('configuracion actions integration', () => {
             hashPassword: async password => `hash:${password}`,
           },
           {
+            modo: 'manual',
             periodoAnterior: 'Marzo 2024',
             periodoActual: 'Marzo 2025',
           }
         ),
       /Sin permisos/
     );
+  });
+
+  it('crea un periodo desde mes estadístico con fechas y etiquetas automáticas', async () => {
+    await crearPeriodoWithDeps(
+      {
+        database: testDb.db,
+        getSession: async () => ({ user: { id: ADMIN_ID, rol: 'ADMIN' } }),
+        revalidate: () => {},
+        hashPassword: async password => `hash:${password}`,
+      },
+      {
+        modo: 'mes-estadistico',
+        anteriorMes: 3,
+        anteriorAnio: 2025,
+        actualMes: 4,
+        actualAnio: 2026,
+      }
+    );
+
+    const periodos = await testDb.db.select().from(configPeriodos);
+    const activePeriodo = periodos.find(periodo => periodo.activo);
+
+    assert.equal(activePeriodo?.anteriorLabel, 'Mes estadístico marzo de 2025');
+    assert.equal(activePeriodo?.actualLabel, 'Mes estadístico abril de 2026');
+    assert.equal(activePeriodo?.anteriorInicio.toISOString().slice(0, 10), '2025-03-01');
+    assert.equal(activePeriodo?.actualInicio.toISOString().slice(0, 10), '2026-04-01');
   });
 
   it('crea usuarios y alterna estado solo para ADMIN', async () => {
@@ -276,6 +304,7 @@ describe('configuracion actions integration', () => {
             hashPassword: async password => `hash:${password}`,
           },
           {
+            modo: 'manual',
             periodoAnterior: 'Mismo período',
             periodoActual: 'Mismo período',
           }

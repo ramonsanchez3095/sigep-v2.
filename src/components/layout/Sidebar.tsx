@@ -22,6 +22,7 @@ import {
   GraduationCap,
   MapPin,
   Home,
+  BarChart3,
   type LucideIcon,
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -44,6 +45,13 @@ const menuItems: MenuItem[] = [
     icon: Home,
     path: '/dashboard',
     color: '#94a3b8', // Slate-400 for better visibility
+  },
+  {
+    id: 'estadisticas',
+    label: 'Estadísticas',
+    icon: BarChart3,
+    path: '/estadisticas',
+    color: '#6366f1', // Indigo-500
   },
   {
     id: 'd1',

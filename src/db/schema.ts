@@ -254,3 +254,140 @@ export const snapshotsRelations = relations(snapshots, ({ one }) => ({
     references: [usuarios.id],
   }),
 }));
+
+// ============================================
+// ESTADÍSTICAS PRE-AGREGADAS
+// ============================================
+export const estadisticasDiarias = pgTable(
+  'estadisticas_diarias',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    departamentoId: uuid('departamento_id')
+      .notNull()
+      .references(() => departamentos.id),
+    tablaConfigId: uuid('tabla_config_id')
+      .notNull()
+      .references(() => tablasConfig.id, { onDelete: 'cascade' }),
+    fecha: timestamp('fecha').notNull(),
+    totalPeriodoAnterior: decimal('total_periodo_anterior', {
+      precision: 15,
+      scale: 2,
+    })
+      .default('0')
+      .notNull(),
+    totalPeriodoActual: decimal('total_periodo_actual', {
+      precision: 15,
+      scale: 2,
+    })
+      .default('0')
+      .notNull(),
+    cantidadCambios: integer('cantidad_cambios').default(0).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  t => [unique().on(t.tablaConfigId, t.fecha)]
+);
+
+export const estadisticasMensuales = pgTable(
+  'estadisticas_mensuales',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    departamentoId: uuid('departamento_id')
+      .notNull()
+      .references(() => departamentos.id),
+    tablaConfigId: uuid('tabla_config_id')
+      .notNull()
+      .references(() => tablasConfig.id, { onDelete: 'cascade' }),
+    mes: integer('mes').notNull(),
+    anio: integer('anio').notNull(),
+    promedioDiario: decimal('promedio_diario', { precision: 15, scale: 2 })
+      .default('0')
+      .notNull(),
+    picoMaximo: decimal('pico_maximo', { precision: 15, scale: 2 })
+      .default('0')
+      .notNull(),
+    picoMinimo: decimal('pico_minimo', { precision: 15, scale: 2 })
+      .default('0')
+      .notNull(),
+    totalCambios: integer('total_cambios').default(0).notNull(),
+    snapshotData: json('snapshot_data'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  t => [unique().on(t.tablaConfigId, t.mes, t.anio)]
+);
+
+export const estadisticasAnuales = pgTable(
+  'estadisticas_anuales',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    departamentoId: uuid('departamento_id')
+      .notNull()
+      .references(() => departamentos.id),
+    tablaConfigId: uuid('tabla_config_id')
+      .notNull()
+      .references(() => tablasConfig.id, { onDelete: 'cascade' }),
+    anio: integer('anio').notNull(),
+    totalAnualAnterior: decimal('total_anual_anterior', {
+      precision: 15,
+      scale: 2,
+    })
+      .default('0')
+      .notNull(),
+    totalAnualActual: decimal('total_anual_actual', {
+      precision: 15,
+      scale: 2,
+    })
+      .default('0')
+      .notNull(),
+    promedioMensual: decimal('promedio_mensual', { precision: 15, scale: 2 })
+      .default('0')
+      .notNull(),
+    tendencia: decimal('tendencia', { precision: 15, scale: 6 })
+      .default('0')
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  t => [unique().on(t.tablaConfigId, t.anio)]
+);
+
+// Relations para estadísticas
+export const estadisticasDiariasRelations = relations(
+  estadisticasDiarias,
+  ({ one }) => ({
+    departamento: one(departamentos, {
+      fields: [estadisticasDiarias.departamentoId],
+      references: [departamentos.id],
+    }),
+    tablaConfig: one(tablasConfig, {
+      fields: [estadisticasDiarias.tablaConfigId],
+      references: [tablasConfig.id],
+    }),
+  })
+);
+
+export const estadisticasMensualesRelations = relations(
+  estadisticasMensuales,
+  ({ one }) => ({
+    departamento: one(departamentos, {
+      fields: [estadisticasMensuales.departamentoId],
+      references: [departamentos.id],
+    }),
+    tablaConfig: one(tablasConfig, {
+      fields: [estadisticasMensuales.tablaConfigId],
+      references: [tablasConfig.id],
+    }),
+  })
+);
+
+export const estadisticasAnualesRelations = relations(
+  estadisticasAnuales,
+  ({ one }) => ({
+    departamento: one(departamentos, {
+      fields: [estadisticasAnuales.departamentoId],
+      references: [departamentos.id],
+    }),
+    tablaConfig: one(tablasConfig, {
+      fields: [estadisticasAnuales.tablaConfigId],
+      references: [tablasConfig.id],
+    }),
+  })
+);

@@ -4,12 +4,31 @@ import type { DB } from '@/db';
 import { configPeriodos, configGlobal, usuarios } from '../db/schema';
 import {
   activarPeriodoSchema,
+  type CrearPeriodoInput,
   crearPeriodoSchema,
   crearUsuarioSchema,
   parseOrThrow,
   toggleUsuarioActivoSchema,
 } from '../lib/action-schemas';
 import { eq, desc } from 'drizzle-orm';
+
+const monthFormatter = new Intl.DateTimeFormat('es-AR', {
+  month: 'long',
+  year: 'numeric',
+});
+
+function buildStatisticalMonthPeriod(mes: number, anio: number) {
+  const inicio = new Date(anio, mes - 1, 1);
+  const fin = new Date(anio, mes, 0, 23, 59, 59, 999);
+  const fechaEtiqueta = new Date(anio, mes - 1, 1);
+  const label = `Mes estadístico ${monthFormatter.format(fechaEtiqueta)}`;
+
+  return {
+    inicio,
+    fin,
+    label: label.charAt(0).toUpperCase() + label.slice(1),
+  };
+}
 
 interface SessionLike {
   user?: {
@@ -57,10 +76,7 @@ export async function obtenerPeriodos() {
 
 export async function crearPeriodoWithDeps(
   deps: ConfigActionDeps,
-  data: {
-  periodoAnterior: string;
-  periodoActual: string;
-}
+  data: CrearPeriodoInput
 ) {
   await requireAdminSession(deps.getSession);
   const parsed = parseOrThrow(crearPeriodoSchema, data);
@@ -68,25 +84,43 @@ export async function crearPeriodoWithDeps(
   // Desactivar todos los períodos anteriores
   await deps.database.update(configPeriodos).set({ activo: false });
 
-  const now = new Date();
+  const periodo =
+    parsed.modo === 'mes-estadistico'
+      ? {
+          anterior: buildStatisticalMonthPeriod(
+            parsed.anteriorMes,
+            parsed.anteriorAnio
+          ),
+          actual: buildStatisticalMonthPeriod(parsed.actualMes, parsed.actualAnio),
+        }
+      : {
+          anterior: {
+            inicio: new Date(),
+            fin: new Date(),
+            label: parsed.periodoAnterior,
+          },
+          actual: {
+            inicio: new Date(),
+            fin: new Date(),
+            label: parsed.periodoActual,
+          },
+        };
+
   // Crear nuevo período activo
   await deps.database.insert(configPeriodos).values({
-    anteriorLabel: parsed.periodoAnterior,
-    actualLabel: parsed.periodoActual,
-    anteriorInicio: now,
-    anteriorFin: now,
-    actualInicio: now,
-    actualFin: now,
+    anteriorLabel: periodo.anterior.label,
+    actualLabel: periodo.actual.label,
+    anteriorInicio: periodo.anterior.inicio,
+    anteriorFin: periodo.anterior.fin,
+    actualInicio: periodo.actual.inicio,
+    actualFin: periodo.actual.fin,
     activo: true,
   });
 
   deps.revalidate('/', 'layout');
 }
 
-export async function crearPeriodo(data: {
-  periodoAnterior: string;
-  periodoActual: string;
-}) {
+export async function crearPeriodo(data: CrearPeriodoInput) {
   const deps = await getConfigActionDeps();
   return crearPeriodoWithDeps(deps, data);
 }

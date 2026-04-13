@@ -9,6 +9,13 @@ import {
   buildExcelSheetData,
   buildExportFilename,
   buildPdfTableData,
+  buildEstadisticasPdfData,
+  buildEstadisticasExcelData,
+} from '../../lib/export-utils';
+import type {
+  EstadisticasExportContext,
+  EstadisticasFila,
+  EstadisticasExcelSheet,
 } from '../../lib/export-utils';
 
 interface ExportButtonsProps {
@@ -125,6 +132,149 @@ export function ExportButtons({
     XLSX.writeFile(
       wb,
       buildExportFilename(titulo, 'xlsx', generatedAt)
+    );
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={exportToPDF}
+        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+      >
+        <FileText size={18} /> Exportar PDF
+      </button>
+      <button
+        onClick={exportToExcel}
+        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+      >
+        <FileSpreadsheet size={18} /> Exportar Excel
+      </button>
+    </div>
+  );
+}
+
+// ============================================
+// ESTADÍSTICAS — Botones de exportación
+// ============================================
+
+interface ExportButtonsEstadisticasProps {
+  escala: string;
+  filtrosLabel: string;
+  datos: EstadisticasFila[];
+  columnas: string[];
+  kpis?: Record<string, string | number>;
+  yoyDatos?: EstadisticasFila[];
+  yoyColumnas?: string[];
+  proyeccionDatos?: EstadisticasFila[];
+}
+
+export function ExportButtonsEstadisticas({
+  escala,
+  filtrosLabel,
+  datos,
+  columnas,
+  kpis,
+  yoyDatos,
+  yoyColumnas,
+  proyeccionDatos,
+}: ExportButtonsEstadisticasProps) {
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const generatedAt = new Date();
+
+    // Header
+    doc.setFillColor(99, 102, 241); // indigo-500
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text('SIGEP - Estadísticas', 105, 15, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text(`Escala: ${escala}`, 105, 25, { align: 'center' });
+    doc.text(filtrosLabel || 'Sin filtros', 105, 33, { align: 'center' });
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.text(
+      `Fecha de generación: ${generatedAt.toLocaleDateString('es-AR')}`,
+      14,
+      50
+    );
+
+    let startY = 58;
+
+    // KPIs summary
+    if (kpis) {
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Indicadores Clave', 14, startY);
+      startY += 6;
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      for (const [key, val] of Object.entries(kpis)) {
+        doc.text(`${key}: ${val}`, 18, startY);
+        startY += 5;
+      }
+      startY += 4;
+    }
+
+    // Main data table
+    const tableData = buildEstadisticasPdfData(datos, columnas);
+    autoTable(doc, {
+      head: [columnas],
+      body: tableData,
+      startY,
+      headStyles: {
+        fillColor: [99, 102, 241],
+        textColor: 255,
+        fontStyle: 'bold',
+      },
+      alternateRowStyles: { fillColor: [245, 247, 250] },
+      styles: { fontSize: 9, cellPadding: 4 },
+    });
+
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(
+        `Página ${i} de ${pageCount} - Generado por SIGEP`,
+        105,
+        doc.internal.pageSize.height - 10,
+        { align: 'center' }
+      );
+    }
+
+    doc.save(buildExportFilename(`Estadisticas_${escala}`, 'pdf', generatedAt));
+  };
+
+  const exportToExcel = () => {
+    const generatedAt = new Date();
+    const context: EstadisticasExportContext = {
+      escala,
+      filtros: filtrosLabel,
+      generatedAt,
+    };
+
+    const sheets = buildEstadisticasExcelData(
+      context,
+      datos,
+      columnas,
+      kpis,
+      yoyDatos,
+      yoyColumnas,
+      proyeccionDatos
+    );
+
+    const wb = XLSX.utils.book_new();
+    for (const sheet of sheets) {
+      const ws = XLSX.utils.aoa_to_sheet(sheet.datos);
+      XLSX.utils.book_append_sheet(wb, ws, sheet.nombre);
+    }
+    XLSX.writeFile(
+      wb,
+      buildExportFilename(`Estadisticas_${escala}`, 'xlsx', generatedAt)
     );
   };
 

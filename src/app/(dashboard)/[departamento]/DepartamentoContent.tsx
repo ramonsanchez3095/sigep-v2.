@@ -1,13 +1,16 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useCallback, useMemo } from 'react';
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import { StatCard } from '@/components/ui/StatCard';
+import D1DepartamentoView from './D1DepartamentoView';
 import {
   TablaComparativa,
   type FilaComparativa,
 } from '@/components/tables/TablaComparativa';
 import { ExportButtons } from '@/components/export/ExportButtons';
+import { D1ExportButtons } from '@/components/export/D1ExportButtons';
 import {
   BarChartComparativo,
   PieChartComponent,
@@ -28,6 +31,11 @@ import {
   MapPin,
   type LucideIcon,
 } from 'lucide-react';
+import {
+  buildD1Dashboard,
+  hasD1StructuredTables,
+  type D1RawTable,
+} from '@/lib/d1-transform';
 
 interface TablaData {
   id: string;
@@ -139,22 +147,75 @@ export function DepartamentoContent({
     return { barData, pieData, totalAnterior, totalActual, porcentaje };
   }, [tablasState]);
 
+  const d1AvanzadoDisponible =
+    departamento.codigo === 'd1' &&
+    hasD1StructuredTables(tablasState as unknown as D1RawTable[]);
+
+  const d1Dashboard = useMemo(
+    () =>
+      d1AvanzadoDisponible
+        ? buildD1Dashboard(tablasState as unknown as D1RawTable[])
+        : null,
+    [d1AvanzadoDisponible, tablasState]
+  );
+
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
   const shieldImg = SHIELD_MAP[departamento.codigo];
+  const codigoLabel = departamento.codigo.toUpperCase().replace(/_/g, ' ');
 
   // Aplanar todas las filas para export
   const todasLasFilas = tablasState.flatMap(t => t.datos);
 
   return (
-    <div>
+    <div className="space-y-8">
+      <section className="division-hero relative overflow-hidden rounded-[28px] border border-[#d7ad45]/30 px-6 py-7 shadow-[0_24px_60px_rgba(15,29,48,0.18)] sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(215,173,69,0.2),transparent_35%),linear-gradient(135deg,#11233c_0%,#1e3a5f_55%,#284a74_100%)]" />
+        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full border border-white/10" />
+        <div className="absolute bottom-5 left-5 h-24 w-24 rounded-full border border-white/10" />
+
+        <div className="relative flex flex-col items-center gap-6 text-center lg:flex-row lg:items-center lg:gap-8 lg:text-left">
+          <div className="shrink-0 rounded-[28px] bg-white/8 p-2.5 backdrop-blur-sm shadow-[0_18px_35px_rgba(0,0,0,0.18)] ring-1 ring-white/10">
+            {shieldImg ? (
+              <Image
+                src={shieldImg}
+                alt={`Escudo ${departamento.nombre}`}
+                width={160}
+                height={160}
+                className="h-28 w-28 object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] sm:h-36 sm:w-36 lg:h-40 lg:w-40"
+              />
+            ) : (
+              <div className="flex h-28 w-28 items-center justify-center rounded-[24px] bg-white/10 text-white sm:h-36 sm:w-36 lg:h-40 lg:w-40">
+                <Icon size={60} />
+              </div>
+            )}
+          </div>
+
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center rounded-full border border-[#f2d47c]/35 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#f7e7b2] backdrop-blur-sm">
+              {codigoLabel} · Policía de Tucumán · SIGEP
+            </div>
+            <h1 className="font-institutional mt-4 text-3xl font-black uppercase italic leading-[0.95] text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.18)] sm:text-4xl lg:text-5xl xl:text-[3.4rem]">
+              {departamento.nombre}
+            </h1>
+            <div className="mx-auto mt-4 h-px w-36 bg-gradient-to-r from-transparent via-[#f2d47c] to-transparent lg:mx-0 lg:w-56" />
+            <p className="font-institutional mt-4 text-lg font-bold uppercase italic tracking-[0.08em] text-[#f9efc7] sm:text-xl lg:text-2xl">
+              Datos estadísticos comparativos
+            </p>
+            <p className="mx-auto mt-4 max-w-3xl text-sm leading-6 text-slate-200/95 lg:mx-0 lg:text-base">
+              Panel operativo para consolidar, comparar y exportar la información
+              del {departamento.nombre.toLowerCase()} entre {periodoAnteriorLabel} y {periodoActualLabel}.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <PageHeader
-        titulo={departamento.nombre}
-        subtitulo="Datos estadísticos comparativos"
+        titulo={`Panel ${codigoLabel}`}
+        subtitulo={`Resumen comparativo ${periodoAnteriorLabel} vs ${periodoActualLabel}`}
         color={departamento.color}
         icon={
           shieldImg ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={shieldImg}
               alt={departamento.nombre}
               width={28}
@@ -166,104 +227,115 @@ export function DepartamentoContent({
           )
         }
       >
-        <ExportButtons
-          titulo={departamento.nombre}
-          datos={todasLasFilas}
-          departamento={departamento.nombre}
-          periodo={`${periodoAnteriorLabel} vs ${periodoActualLabel}`}
-        />
+        {d1Dashboard ? (
+          <D1ExportButtons
+            titulo={departamento.nombre}
+            departamento={departamento.nombre}
+            departamentoId={departamento.id}
+            periodo={`${periodoAnteriorLabel} vs ${periodoActualLabel}`}
+            periodoAnteriorLabel={periodoAnteriorLabel}
+            periodoActualLabel={periodoActualLabel}
+            dashboard={d1Dashboard}
+          />
+        ) : (
+          <ExportButtons
+            titulo={departamento.nombre}
+            datos={todasLasFilas}
+            departamento={departamento.nombre}
+            periodo={`${periodoAnteriorLabel} vs ${periodoActualLabel}`}
+          />
+        )}
       </PageHeader>
 
-      {/* Escudo del departamento (si existe) */}
-      {shieldImg && (
-        <div className="flex justify-center mb-8">
-          <div className="flex flex-col items-center gap-3 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={shieldImg}
-              alt={`Escudo ${departamento.nombre}`}
-              width={180}
-              height={200}
-              className="object-contain drop-shadow-md"
+      {departamento.codigo === 'd1' && !d1AvanzadoDisponible ? (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
+          La vista avanzada de D1 ya esta integrada en el sistema. Para verla con la nueva estructura completa hace falta reinicializar D1 con el seed actualizado o regenerar sus tablas base.
+        </div>
+      ) : null}
+
+      {d1AvanzadoDisponible ? (
+        <D1DepartamentoView
+          departamento={departamento}
+          tables={tablasState as unknown as D1RawTable[]}
+          periodoAnteriorLabel={periodoAnteriorLabel}
+          periodoActualLabel={periodoActualLabel}
+          onTablesChange={nextTables =>
+            setTablasState(nextTables as unknown as TablaData[])
+          }
+        />
+      ) : (
+        <>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <StatCard
+              titulo="Total Período Anterior"
+              valor={chartData.totalAnterior}
+              icon={<Icon size={20} />}
+              color={departamento.color}
             />
-            <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider">
-              {departamento.nombre}
-            </p>
+            <StatCard
+              titulo="Total Período Actual"
+              valor={chartData.totalActual}
+              valorAnterior={chartData.totalAnterior}
+              porcentaje={chartData.porcentaje}
+              icon={<Icon size={20} />}
+              color={departamento.color}
+            />
+            <StatCard
+              titulo="Tablas de Datos"
+              valor={tablasState.length}
+              subtitulo={`${todasLasFilas.length} filas en total`}
+              icon={<Icon size={20} />}
+              color={departamento.color}
+            />
           </div>
-        </div>
-      )}
 
-      {/* Stats resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <StatCard
-          titulo="Total Período Anterior"
-          valor={chartData.totalAnterior}
-          icon={<Icon size={20} />}
-          color={departamento.color}
-        />
-        <StatCard
-          titulo="Total Período Actual"
-          valor={chartData.totalActual}
-          valorAnterior={chartData.totalAnterior}
-          porcentaje={chartData.porcentaje}
-          icon={<Icon size={20} />}
-          color={departamento.color}
-        />
-        <StatCard
-          titulo="Tablas de Datos"
-          valor={tablasState.length}
-          subtitulo={`${todasLasFilas.length} filas en total`}
-          icon={<Icon size={20} />}
-          color={departamento.color}
-        />
-      </div>
-
-      {/* Gráficos reactivos */}
-      {tablasState.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <ChartContainer titulo="Comparativo por Períodos">
-            <BarChartComparativo
-              datos={chartData.barData.slice(0, 10)}
-              colorAnterior="#94a3b8"
-              colorActual={departamento.color}
-            />
-          </ChartContainer>
-          {chartData.pieData.length > 1 && (
-            <ChartContainer titulo="Distribución Actual por Categoría">
-              <PieChartComponent datos={chartData.pieData} />
-            </ChartContainer>
+          {tablasState.length > 0 && (
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <ChartContainer titulo="Comparativo por Períodos">
+                <BarChartComparativo
+                  datos={chartData.barData.slice(0, 10)}
+                  colorAnterior="#94a3b8"
+                  colorActual={departamento.color}
+                />
+              </ChartContainer>
+              {chartData.pieData.length > 1 && (
+                <ChartContainer titulo="Distribución Actual por Categoría">
+                  <PieChartComponent datos={chartData.pieData} />
+                </ChartContainer>
+              )}
+            </div>
           )}
-        </div>
-      )}
 
-      {/* Tablas editables */}
-      <SectionHeader titulo="Datos Comparativos" color={departamento.color} />
-      <div className="space-y-6">
-        {tablasState.map(tabla => (
-          <TablaComparativa
-            key={tabla.tablaId}
-            titulo={tabla.nombre}
-            tablaId={tabla.tablaId}
-            tablaConfigId={tabla.id}
-            departamento={departamento.nombre}
-            color={departamento.color}
-            labelPeriodoAnterior={periodoAnteriorLabel}
-            labelPeriodoActual={periodoActualLabel}
-            filas={tabla.datos}
-            onDataChange={handleDataChange}
-          />
-        ))}
-      </div>
+          <SectionHeader titulo="Datos Comparativos" color={departamento.color} />
+          <div className="space-y-6">
+            {tablasState.map(tabla => (
+              <TablaComparativa
+                key={tabla.tablaId}
+                titulo={tabla.nombre}
+                tablaId={tabla.tablaId}
+                tablaConfigId={tabla.id}
+                departamento={departamento.nombre}
+                color={departamento.color}
+                labelPeriodoAnterior={periodoAnteriorLabel}
+                labelPeriodoActual={periodoActualLabel}
+                filas={tabla.datos}
+                onDataChange={handleDataChange}
+              />
+            ))}
+          </div>
 
-      {tablasState.length === 0 && (
-        <div className="card p-12 text-center">
-          <p className="text-gray-500 text-lg">
-            No hay tablas configuradas para este departamento.
-          </p>
-          <p className="text-gray-400 text-sm mt-2">
-            Contacte al administrador para agregar datos.
-          </p>
-        </div>
+          {tablasState.length === 0 && (
+            <div className="card p-12 text-center">
+              <p className="text-gray-500 text-lg">
+                No hay tablas configuradas para este departamento.
+              </p>
+              <p className="mt-2 text-sm text-gray-400">
+                Contacte al administrador para agregar datos.
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

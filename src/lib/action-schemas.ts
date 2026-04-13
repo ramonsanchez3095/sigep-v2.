@@ -50,15 +50,49 @@ export const guardarDatosComparativosSchema = z.object({
     .min(1, 'Debe enviar al menos una fila para guardar'),
 });
 
-export const crearPeriodoSchema = z
-  .object({
-    periodoAnterior: trimmedString('El período anterior', 100),
-    periodoActual: trimmedString('El período actual', 100),
-  })
-  .refine(data => data.periodoAnterior !== data.periodoActual, {
-    message: 'Los períodos deben ser distintos',
-    path: ['periodoActual'],
-  });
+const monthNumberSchema = z
+  .union([z.number(), z.string()])
+  .transform(value => Number(value))
+  .refine(value => Number.isInteger(value), 'El mes debe ser un entero')
+  .refine(value => value >= 1 && value <= 12, 'El mes debe estar entre 1 y 12');
+
+const yearNumberSchema = z
+  .union([z.number(), z.string()])
+  .transform(value => Number(value))
+  .refine(value => Number.isInteger(value), 'El año debe ser un entero')
+  .refine(value => value >= 2000 && value <= 2100, 'El año es inválido');
+
+export const crearPeriodoSchema = z.discriminatedUnion('modo', [
+  z
+    .object({
+      modo: z.literal('manual'),
+      periodoAnterior: trimmedString('El período anterior', 100),
+      periodoActual: trimmedString('El período actual', 100),
+    })
+    .refine(data => data.periodoAnterior !== data.periodoActual, {
+      message: 'Los períodos deben ser distintos',
+      path: ['periodoActual'],
+    }),
+  z
+    .object({
+      modo: z.literal('mes-estadistico'),
+      anteriorMes: monthNumberSchema,
+      anteriorAnio: yearNumberSchema,
+      actualMes: monthNumberSchema,
+      actualAnio: yearNumberSchema,
+    })
+    .refine(
+      data =>
+        data.anteriorMes !== data.actualMes ||
+        data.anteriorAnio !== data.actualAnio,
+      {
+        message: 'Los meses estadísticos deben ser distintos',
+        path: ['actualMes'],
+      }
+    ),
+]);
+
+export type CrearPeriodoInput = z.infer<typeof crearPeriodoSchema>;
 
 export const activarPeriodoSchema = z.object({
   id: canonicalUuidSchema,
@@ -105,6 +139,31 @@ export const historialLimitSchema = z
   .transform(value => Number(value))
   .refine(value => Number.isInteger(value), 'El límite debe ser un entero')
   .refine(value => value >= 1 && value <= 200, 'El límite debe estar entre 1 y 200');
+
+// ============================================
+// ESTADÍSTICAS
+// ============================================
+export const escalaTemporalSchema = z.enum(['semanal', 'mensual', 'anual']);
+
+export const filtrosEstadisticasSchema = z.object({
+  escala: escalaTemporalSchema,
+  departamentoId: canonicalUuidSchema.optional(),
+  tablaConfigId: canonicalUuidSchema.optional(),
+  fechaDesde: z.coerce.date().optional(),
+  fechaHasta: z.coerce.date().optional(),
+});
+
+export const proyeccionSchema = z.object({
+  departamentoId: canonicalUuidSchema.optional(),
+  tablaConfigId: canonicalUuidSchema.optional(),
+  mesesHistoricos: z
+    .union([z.number(), z.string()])
+    .transform(value => Number(value))
+    .refine(value => Number.isInteger(value), 'Debe ser un entero')
+    .refine(value => value >= 3 && value <= 24, 'Debe estar entre 3 y 24')
+    .optional()
+    .default(6),
+});
 
 export function parseOrThrow<T>(schema: z.ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);

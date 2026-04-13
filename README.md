@@ -50,3 +50,34 @@ npm run test:e2e:smoke
 Guía de recuperación local y endurecimiento del entorno E2E:
 
 - Ver [docs/e2e-recovery.md](docs/e2e-recovery.md)
+
+## Operación
+
+Migraciones de base de datos:
+
+```bash
+npx drizzle-kit migrate
+```
+
+Sincronizacion no destructiva de D1:
+
+```bash
+npm run d1:sync
+```
+
+- Completa la estructura avanzada de D1 en `tablas_config` y `datos_comparativos`.
+- Conserva los valores existentes cuando encuentra filas legacy equivalentes.
+- No elimina filas antiguas; las deja preservadas para auditoria o recuperacion.
+
+Seed completo de datos iniciales:
+
+```bash
+npm run db:seed
+```
+
+Rollup programado de estadísticas:
+
+- El endpoint es `/api/cron/estadisticas`.
+- Requiere el header `Authorization: Bearer <CRON_SECRET>`.
+- En Vercel, [vercel.json](vercel.json) programa una ejecución diaria a las `03:00 UTC`.
+- Para producción, definir `CRON_SECRET` en las variables de entorno del proyecto desplegado con el mismo valor usado por el cron.
