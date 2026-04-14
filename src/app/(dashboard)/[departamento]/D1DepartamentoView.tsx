@@ -325,7 +325,7 @@ export default function D1DepartamentoView({
             <p className="text-sm leading-6 text-slate-500">{section.description}</p>
           ) : null}
 
-          <div className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
+          <div className="mx-auto flex max-w-6xl flex-col gap-8">
             {section.tables.map(table => {
               const presentation = D1_TABLE_LAYOUT[table.tableId];
 

@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { DivisionBrand } from '@/components/branding/DivisionBrand';
 
 interface HeaderProps {
   userNombre: string;
@@ -69,7 +68,6 @@ export function Header({
             <Menu size={20} className="text-gray-600" />
           </button>
 
-          <DivisionBrand variant="header" className="max-w-[26rem]" />
 
           <div className="flex min-w-0 items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50/90 px-3 py-2 shadow-sm lg:px-4">
             <Calendar size={18} className="text-policia-primary" />
