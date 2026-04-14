@@ -78,6 +78,16 @@ const ICON_MAP: Record<string, LucideIcon> = {
 // Escudos institucionales disponibles por departamento
 const SHIELD_MAP: Record<string, string> = {
   d1: '/shields/d1.png',
+  d2: '/d2.png',
+  d3: '/d3.png',
+  d4: '/d4.png',
+  d5: '/d5.png',
+  asuntos_internos: '/ASUNTOS INT.png',
+  delitos_rurales: '/DELITOSRURALES.png',
+  digedrop: '/DIGEDROP.png',
+  prevencion_ciudadana: '/PREVENCION.png',
+  unidades_especiales: '/UNI ESP.png',
+  institutos: '/INSTITUCIONES.png',
 };
 
 const COLORS_PALETTE = [

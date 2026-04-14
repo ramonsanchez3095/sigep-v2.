@@ -176,6 +176,15 @@ function Ensure-NextJunctionForOneDrive {
     }
 
     cmd /c "mklink /J `"$workspaceNextPath`" `"$cachePath`"" *> $null
+    
+    # Resolver resolución de dependencias desde caché de la aplicación
+    $cacheNodeModules = Join-Path $cachePath "node_modules"
+    $workspaceNodeModules = Join-Path $PSScriptRoot "node_modules"
+    
+    if (Test-Path $cacheNodeModules) {
+        $null = cmd /c "rmdir `"$cacheNodeModules`"" 2>$null
+    }
+    cmd /c "mklink /J `"$cacheNodeModules`" `"$workspaceNodeModules`"" *> $null
 
     if (-not (Test-Path $workspaceNextPath)) {
         Write-Fail "No se pudo crear el enlace local de .next fuera de OneDrive."
