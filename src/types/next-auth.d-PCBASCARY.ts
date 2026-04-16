@@ -10,6 +10,7 @@ declare module 'next-auth' {
       color: string;
       departamentoId: string | null;
       permisos: string[];
+      totpEnabled: boolean;
     } & DefaultSession['user'];
   }
 
@@ -20,6 +21,7 @@ declare module 'next-auth' {
     color?: string;
     departamentoId?: string | null;
     permisos?: string[];
+    totpEnabled?: boolean;
   }
 }
 
@@ -32,5 +34,6 @@ declare module 'next-auth/jwt' {
     color: string;
     departamentoId: string | null;
     permisos: string[];
+    totpEnabled: boolean;
   }
 }
