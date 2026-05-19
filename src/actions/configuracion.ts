@@ -12,21 +12,20 @@ import {
 } from '../lib/action-schemas';
 import { eq, desc } from 'drizzle-orm';
 
-const monthFormatter = new Intl.DateTimeFormat('es-AR', {
-  month: 'long',
-  year: 'numeric',
-});
+
 
 function buildStatisticalMonthPeriod(mes: number, anio: number) {
   const inicio = new Date(anio, mes - 1, 1);
   const fin = new Date(anio, mes, 0, 23, 59, 59, 999);
-  const fechaEtiqueta = new Date(anio, mes - 1, 1);
-  const label = `Mes estadístico ${monthFormatter.format(fechaEtiqueta)}`;
+  
+  const mm = mes.toString().padStart(2, '0');
+  const yy = anio.toString().slice(-2);
+  const label = `01/${mm}/${yy}`;
 
   return {
     inicio,
     fin,
-    label: label.charAt(0).toUpperCase() + label.slice(1),
+    label,
   };
 }
 

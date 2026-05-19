@@ -13,6 +13,7 @@ import {
   parseOrThrow,
 } from '../lib/action-schemas';
 import { eq, and } from 'drizzle-orm';
+import { D1_SITUACION_PARTICULAR_DEFAULT } from '@/lib/d1-defaults';
 
 export interface DatosComparativosInput {
   filaId: string;
@@ -69,7 +70,7 @@ export async function obtenerTablasDelDepartamentoWithDb(
     .where(eq(tablasConfig.departamentoId, dept.id))
     .orderBy(tablasConfig.orden);
 
-  const tablasConDatos = await Promise.all(
+  let tablasConDatos = await Promise.all(
     tablas.map(async tabla => {
       const datos = await database
         .select()
@@ -91,6 +92,30 @@ export async function obtenerTablasDelDepartamentoWithDb(
       };
     })
   );
+
+  // Fallback: si D1 tiene la tabla 'd1-situacion-particular' pero todos los valores son 0,
+  // rellenamos con los datos provenientes del conjunto por defecto (imagen/seed).
+  if (codigoNormalizado === 'd1') {
+    tablasConDatos = tablasConDatos.map(tabla => {
+      if (tabla.tablaId === 'd1-situacion-particular') {
+        const hasValues = tabla.datos.some(
+          d => d.periodoAnterior !== 0 || d.periodoActual !== 0
+        );
+        if (!hasValues) {
+          return {
+            ...tabla,
+            datos: D1_SITUACION_PARTICULAR_DEFAULT.map(d => ({
+              id: d.filaId,
+              label: d.label,
+              periodoAnterior: d.periodoAnterior,
+              periodoActual: d.periodoActual,
+            })),
+          };
+        }
+      }
+      return tabla;
+    });
+  }
 
   return { departamento: dept, tablas: tablasConDatos };
 }
