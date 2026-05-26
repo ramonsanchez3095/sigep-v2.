@@ -89,8 +89,8 @@ const D1_TABLE_LAYOUT: Record<
     note: 'Incluye casa central, divisiones e implantacion por UURR.',
   },
   'd1-situacion-particular': {
-    badge: 'Novedades',
-    note: 'Seguimiento de situaciones administrativas que afectan disponibilidad.',
+    badge: 'Situación Particular',
+    note: 'Seguimiento de situaciones administrativas y estado de revista particular.',
   },
   'd1-renuncias-aceptadas': { badge: 'Bajas' },
   'd1-otras-situaciones': { badge: 'Movimientos' },

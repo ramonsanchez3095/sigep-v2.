@@ -17,6 +17,8 @@ async function main() {
 
     console.log(`${table.tablaId}: filas legacy preservadas -> ${table.legacyRows.join(', ')}`);
   }
+
+  process.exit(0);
 }
 
 main().catch(error => {
