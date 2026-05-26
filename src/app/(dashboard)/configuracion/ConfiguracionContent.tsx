@@ -184,7 +184,13 @@ export function ConfiguracionContent({
       year: 'numeric',
     });
 
-  const previewMesEstadistico = `Mes estadístico ${MESES[anteriorMes - 1]} ${anteriorAnio} vs Mes estadístico ${MESES[actualMes - 1]} ${actualAnio}`;
+  const formatMesAno = (mes: number, anio: number) => {
+    const mm = mes.toString().padStart(2, '0');
+    const yy = anio.toString().slice(-2);
+    return `01/${mm}/${yy}`;
+  };
+
+  const previewMesEstadistico = `${formatMesAno(anteriorMes, anteriorAnio)} vs ${formatMesAno(actualMes, actualAnio)}`;
 
   const handleActivar = (id: string) => {
     startTransition(async () => {
@@ -286,7 +292,7 @@ export function ConfiguracionContent({
                   }`}
                 >
                   <CalendarRange size={16} />
-                  Mes estadístico
+                  Mes y Año
                 </button>
                 <button
                   onClick={() => setModoPeriodo('manual')}
@@ -306,7 +312,7 @@ export function ConfiguracionContent({
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                     <div className="rounded-xl border border-gray-200 p-4 bg-gray-50/80">
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Mes estadístico anterior
+                        Mes y Año anterior
                       </label>
                       <div className="grid grid-cols-2 gap-3">
                         <select
@@ -333,7 +339,7 @@ export function ConfiguracionContent({
 
                     <div className="rounded-xl border border-gray-200 p-4 bg-gray-50/80">
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Mes estadístico actual
+                        Mes y Año actual
                       </label>
                       <div className="grid grid-cols-2 gap-3">
                         <select

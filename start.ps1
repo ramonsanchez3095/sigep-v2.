@@ -182,7 +182,12 @@ function Ensure-NextJunctionForOneDrive {
     $workspaceNodeModules = Join-Path $PSScriptRoot "node_modules"
     
     if (Test-Path $cacheNodeModules) {
-        $null = cmd /c "rmdir `"$cacheNodeModules`"" 2>$null
+        $nodeModulesItem = Get-Item $cacheNodeModules -Force -ErrorAction SilentlyContinue
+        if ($null -ne $nodeModulesItem -and $nodeModulesItem.LinkType -eq "Junction") {
+            $null = cmd /c "rmdir `"$cacheNodeModules`"" 2>$null
+        } else {
+            Remove-Item $cacheNodeModules -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
     cmd /c "mklink /J `"$cacheNodeModules`" `"$workspaceNodeModules`"" *> $null
 
@@ -423,5 +428,6 @@ else {
         Remove-Item $nextLockPath -Force -ErrorAction SilentlyContinue
     }
 
-    npm run $script:DevScript
+    $targetScript = $script:DevScript
+    cmd /c "npm run $targetScript"
 }

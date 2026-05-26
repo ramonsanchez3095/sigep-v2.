@@ -16,6 +16,7 @@ import {
   PieChartComponent,
   ChartContainer,
 } from '@/components/charts/Charts';
+import { D1_SITUACION_PARTICULAR_DEFAULT } from '@/lib/d1-defaults';
 import {
   Users,
   Shield,
@@ -110,6 +111,32 @@ export function DepartamentoContent({
   // Estado reactivo de todas las tablas — cuando se edita una tabla, los gráficos se actualizan
   const [tablasState, setTablasState] = useState<TablaData[]>(tablasIniciales);
 
+  // Reemplazo visual: si estamos en D1 y la tabla 'd1-situacion-particular' existe pero
+  // todos sus valores son 0, mostrar los valores provisionales que proveíste.
+  const tablasRenderizadas = useMemo(() => {
+    if (departamento.codigo !== 'd1') return tablasState;
+
+    return tablasState.map(tabla => {
+      if (tabla.tablaId === 'd1-situacion-particular') {
+        const hasValues = tabla.datos.some(
+          d => d.periodoAnterior !== 0 || d.periodoActual !== 0
+        );
+        if (!hasValues) {
+          return {
+            ...tabla,
+            datos: D1_SITUACION_PARTICULAR_DEFAULT.map(d => ({
+              id: d.filaId,
+              label: d.label,
+              periodoAnterior: d.periodoAnterior,
+              periodoActual: d.periodoActual,
+            })),
+          };
+        }
+      }
+      return tabla;
+    });
+  }, [tablasState, departamento.codigo]);
+
   /** Callback invocado cuando TablaComparativa guarda cambios */
   const handleDataChange = useCallback(
     (tablaId: string, filasNuevas: FilaComparativa[]) => {
@@ -125,7 +152,7 @@ export function DepartamentoContent({
   // Datos derivados reactivos para gráficos
   const chartData = useMemo(() => {
     // Gráfico de barras: agrupa todas las tablas
-    const barData = tablasState.flatMap(tabla =>
+    const barData = tablasRenderizadas.flatMap(tabla =>
       tabla.datos.map(f => ({
         nombre: f.label.length > 20 ? f.label.substring(0, 20) + '…' : f.label,
         anterior: f.periodoAnterior,
@@ -134,18 +161,18 @@ export function DepartamentoContent({
     );
 
     // Gráfico de torta: totales por tabla
-    const pieData = tablasState.map((tabla, i) => ({
+    const pieData = tablasRenderizadas.map((tabla, i) => ({
       nombre: tabla.nombre,
       valor: tabla.datos.reduce((acc, f) => acc + f.periodoActual, 0),
       color: COLORS_PALETTE[i % COLORS_PALETTE.length],
     }));
 
     // Stats: totales globales
-    const totalAnterior = tablasState.reduce(
+    const totalAnterior = tablasRenderizadas.reduce(
       (acc, t) => acc + t.datos.reduce((a, f) => a + f.periodoAnterior, 0),
       0
     );
-    const totalActual = tablasState.reduce(
+    const totalActual = tablasRenderizadas.reduce(
       (acc, t) => acc + t.datos.reduce((a, f) => a + f.periodoActual, 0),
       0
     );
@@ -159,12 +186,12 @@ export function DepartamentoContent({
 
   const d1AvanzadoDisponible =
     departamento.codigo === 'd1' &&
-    hasD1StructuredTables(tablasState as unknown as D1RawTable[]);
+    hasD1StructuredTables(tablasRenderizadas as unknown as D1RawTable[]);
 
   const d1Dashboard = useMemo(
     () =>
       d1AvanzadoDisponible
-        ? buildD1Dashboard(tablasState as unknown as D1RawTable[])
+        ? buildD1Dashboard(tablasRenderizadas as unknown as D1RawTable[])
         : null,
     [d1AvanzadoDisponible, tablasState]
   );
@@ -173,8 +200,8 @@ export function DepartamentoContent({
   const shieldImg = SHIELD_MAP[departamento.codigo];
   const codigoLabel = departamento.codigo.toUpperCase().replace(/_/g, ' ');
 
-  // Aplanar todas las filas para export
-  const todasLasFilas = tablasState.flatMap(t => t.datos);
+  // Aplanar todas las filas para export (usar datos renderizados)
+  const todasLasFilas = tablasRenderizadas.flatMap(t => t.datos);
 
   return (
     <div className="space-y-8">
@@ -319,7 +346,7 @@ export function DepartamentoContent({
 
           <SectionHeader titulo="Datos Comparativos" color={departamento.color} />
           <div className="space-y-6">
-            {tablasState.map(tabla => (
+            {tablasRenderizadas.map(tabla => (
               <TablaComparativa
                 key={tabla.tablaId}
                 titulo={tabla.nombre}
