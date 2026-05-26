@@ -59,12 +59,20 @@ const D1_TABLE_LAYOUT: Record<
     badge: 'Genero',
     note: 'Distribucion actual y comparativa porcentual por genero.',
   },
-  'd1-oficiales-superiores': { badge: 'Jerarquia A' },
-  'd1-oficiales-jefes': { badge: 'Jerarquia B' },
-  'd1-oficiales-subalternos': { badge: 'Jerarquia C' },
-  'd1-suboficiales-y-agentes': {
-    badge: 'Escalafon base',
-    note: 'Bloque de mayor volumen operativo dentro de la fuerza efectiva.',
+  'd1-oficiales-superiores': { badge: 'Oficiales Superiores' },
+  'd1-oficiales-jefes': { badge: 'Oficiales Jefes' },
+  'd1-oficiales-subalternos': { badge: 'Oficiales Subalternos' },
+  'd1-suboficiales-superiores': { badge: 'Suboficiales Superiores' },
+  'd1-suboficiales-subalternos': { badge: 'Suboficiales Subalternos' },
+  'd1-tropa': { badge: 'Tropa' },
+  'd1-transitorio': { badge: 'Transitorio' },
+  'd1-cuadro-oficiales': {
+    badge: 'Personal por jerarquia',
+    note: 'Cuadro de oficiales: detalle comparativo por bloque de escalafon.',
+  },
+  'd1-cuadro-suboficiales': {
+    badge: 'Personal por jerarquia',
+    note: 'Cuadro de suboficiales: detalle comparativo por bloque de escalafon.',
   },
   'd1-resumen-jerarquia': {
     badge: 'Cierre jerarquico',
@@ -88,6 +96,10 @@ const D1_TABLE_LAYOUT: Record<
   'd1-otras-situaciones': { badge: 'Movimientos' },
   'd1-ascensos': { badge: 'Promociones' },
 };
+
+// Tablas ocultas del renderizado principal. Vacío: todos los cuadros
+// de jerarquía (incluidos los de resumen) se muestran en el dashboard.
+const D1_TABLES_TO_HIDE = new Set<string>();
 
 export default function D1DepartamentoView({
   departamento,
@@ -326,7 +338,9 @@ export default function D1DepartamentoView({
           ) : null}
 
           <div className="mx-auto flex max-w-6xl flex-col gap-8">
-            {section.tables.map(table => {
+            {section.tables
+              .filter(table => !D1_TABLES_TO_HIDE.has(table.tableId))
+              .map(table => {
               const presentation = D1_TABLE_LAYOUT[table.tableId];
 
               return (

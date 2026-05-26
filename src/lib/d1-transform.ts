@@ -2,7 +2,6 @@ import {
   D1_BAR_METRICS,
   D1_CANONICAL_TOTAL,
   D1_PIE_METRICS,
-  D1_REQUIRED_TABLE_IDS,
   D1_SECTIONS,
   D1_SUMMARY_METRICS,
   D1_TABLES,
@@ -107,9 +106,18 @@ const calculateVariation = (periodoAnterior: number, periodoActual: number) => {
   );
 };
 
+// Tablas mínimas requeridas para activar la vista D1 avanzada.
+// Se usan solo las tablas core para que la vista se active aunque falten
+// tablas más nuevas que aún no se sincronizaron a la BD.
+const D1_CORE_TABLE_IDS = [
+  'd1-total-personal-policial',
+  'd1-personal-por-tipo',
+  'd1-personal-por-genero',
+];
+
 export function hasD1StructuredTables(rawTables: D1RawTable[]) {
   const ids = new Set(rawTables.map(table => table.tablaId));
-  return D1_REQUIRED_TABLE_IDS.every(tableId => ids.has(tableId));
+  return D1_CORE_TABLE_IDS.every(tableId => ids.has(tableId));
 }
 
 export function replaceD1RawTableRows(
