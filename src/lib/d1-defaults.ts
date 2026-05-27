@@ -21,3 +21,30 @@ export const D1_SITUACION_PARTICULAR_DEFAULT = [
 ];
 
 export default D1_SITUACION_PARTICULAR_DEFAULT;
+
+export const D1_CUADRO_COMPARATIVO_DEFAULT = [
+  { filaId: 'normales', label: 'NORMALES', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'administrativas', label: 'ADMINISTRATIVAS', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'baja_laboral_art', label: 'BAJA LABORAL (ART)', periodoAnterior: 0, periodoActual: 0 },
+];
+
+export const D1_ASCENSOS_PROYECCION_DEFAULT = [
+  { filaId: 'crio_gral', label: 'CRIO. GRAL.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'crio_my', label: 'CRIO. MY.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'crio_insp', label: 'CRIO. INSP.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'crio_ppal', label: 'CRIO. PPAL.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'comisario', label: 'COMISARIO', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'subcrio', label: 'SUBCRIO.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'of_ppal', label: 'OF. PPAL.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'of_aux', label: 'OF. AUX.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'of_ayte', label: 'OF. AYTE.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'subof_my', label: 'SUBOF. MY', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'subof_ppal', label: 'SUBOF. PPAL.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'sgto_ayte', label: 'SGTO. AYTE.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'sgto_1', label: 'SGTO. 1°', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'sgto', label: 'SGTO.', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'cabo_1', label: 'CABO 1°', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'cabo', label: 'CABO', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'agente', label: 'Agente', periodoAnterior: 0, periodoActual: 0 },
+  { filaId: 'ptp', label: 'P.T.P.', periodoAnterior: 0, periodoActual: 0 },
+];

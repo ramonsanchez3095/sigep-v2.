@@ -94,6 +94,8 @@ const D1_TABLE_LAYOUT: Record<
   },
   'd1-renuncias-aceptadas': { badge: 'Bajas' },
   'd1-otras-situaciones': { badge: 'Movimientos' },
+  'd1-cuadro-comparativo': { badge: 'Cuadro comparativo' },
+  'd1-ascensos-proyeccion': { badge: 'Proyección Ascensos' },
   'd1-ascensos': { badge: 'Promociones' },
 };
 
