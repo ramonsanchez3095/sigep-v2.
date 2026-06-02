@@ -198,6 +198,8 @@ function Ensure-NextJunctionForOneDrive {
     Write-Ok "Cache de Next.js reubicado fuera de OneDrive: $cachePath"
 }
 
+$DbPortInUse = Test-PortInUse -Port 5433
+
 # 1) Verificar prerequisitos
 Write-Step "Verificando prerequisitos..."
 
@@ -211,28 +213,33 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
 }
 Write-Ok "npm $(npm -v)"
 
-if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    Write-Fail "Docker no esta instalado. Descargalo en https://www.docker.com"
-}
-Write-Ok "Docker $(docker --version)"
-
-& docker info *> $null
-if ($LASTEXITCODE -ne 0) {
-    Write-Fail "Docker Engine no responde. Abri Docker Desktop y espera a que termine de iniciar."
-}
-Write-Ok "Docker Engine disponible."
-
-& docker compose version *> $null
-if ($LASTEXITCODE -eq 0) {
-    $script:UseComposeV2 = $true
-    Write-Ok "Compose detectado: docker compose"
-}
-elseif (Get-Command docker-compose -ErrorAction SilentlyContinue) {
-    $script:UseComposeV2 = $false
-    Write-Ok "Compose detectado: docker-compose"
+if (-not $DbPortInUse) {
+    if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+        Write-Fail "Docker no esta instalado. Descargalo en https://www.docker.com"
+    }
+    Write-Ok "Docker $(docker --version)"
+    
+    & docker info *> $null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Fail "Docker Engine no responde. Abri Docker Desktop y espera a que termine de iniciar."
+    }
+    Write-Ok "Docker Engine disponible."
+    
+    & docker compose version *> $null
+    if ($LASTEXITCODE -eq 0) {
+        $script:UseComposeV2 = $true
+        Write-Ok "Compose detectado: docker compose"
+    }
+    elseif (Get-Command docker-compose -ErrorAction SilentlyContinue) {
+        $script:UseComposeV2 = $false
+        Write-Ok "Compose detectado: docker-compose"
+    }
+    else {
+        Write-Fail "No se encontro Docker Compose (docker compose ni docker-compose)."
+    }
 }
 else {
-    Write-Fail "No se encontro Docker Compose (docker compose ni docker-compose)."
+    Write-Ok "PostgreSQL ya esta escuchando en el puerto 5433. Se omiten validaciones de Docker."
 }
 
 if ($script:IsOneDrivePath) {
@@ -292,34 +299,40 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # 4) Levantar PostgreSQL
-Write-Step "Levantando PostgreSQL con Docker Compose..."
-Invoke-Compose -ComposeArgs @("up", "-d", "postgres")
-if ($LASTEXITCODE -ne 0) {
-    Write-Fail "Error al levantar PostgreSQL con Compose."
-}
-
-Write-Host "   Esperando a que PostgreSQL este listo..." -NoNewline
-$maxRetries = 60
-$retries = 0
-$health = ""
-
-do {
-    Start-Sleep -Seconds 1
-    $retries++
-    Write-Host "." -NoNewline
-    $healthRaw = & docker inspect "--format={{.State.Health.Status}}" sigep_v2_postgres 2>$null
-    if ($healthRaw) {
-        $health = ($healthRaw | Select-Object -First 1).ToString().Trim()
+Write-Step "Levantando PostgreSQL..."
+if (-not $DbPortInUse) {
+    Write-Host "   Levantando PostgreSQL con Docker Compose..."
+    Invoke-Compose -ComposeArgs @("up", "-d", "postgres")
+    if ($LASTEXITCODE -ne 0) {
+        Write-Fail "Error al levantar PostgreSQL con Compose."
+    }
+    
+    Write-Host "   Esperando a que PostgreSQL este listo..." -NoNewline
+    $maxRetries = 60
+    $retries = 0
+    $health = ""
+    
+    do {
+        Start-Sleep -Seconds 1
+        $retries++
+        Write-Host "." -NoNewline
+        $healthRaw = & docker inspect "--format={{.State.Health.Status}}" sigep_v2_postgres 2>$null
+        if ($healthRaw) {
+            $health = ($healthRaw | Select-Object -First 1).ToString().Trim()
+        }
+    }
+    while ($health -ne "healthy" -and $retries -lt $maxRetries)
+    
+    Write-Host ""
+    if ($health -eq "healthy") {
+        Write-Ok "PostgreSQL listo (puerto 5433)."
+    }
+    else {
+        Write-Fail "PostgreSQL no respondio despues de $maxRetries segundos."
     }
 }
-while ($health -ne "healthy" -and $retries -lt $maxRetries)
-
-Write-Host ""
-if ($health -eq "healthy") {
-    Write-Ok "PostgreSQL listo (puerto 5433)."
-}
 else {
-    Write-Fail "PostgreSQL no respondio despues de $maxRetries segundos."
+    Write-Ok "PostgreSQL ya se encuentra activo en el puerto 5433 (se omite Docker Compose up)."
 }
 
 # 5) Migraciones
@@ -336,7 +349,17 @@ Write-Ok "Migraciones aplicadas."
 
 # 6) Seed
 if (-not $SkipSeed) {
-    if ($script:IsOneDrivePath) {
+    if ($DbPortInUse) {
+        Write-Step "Ejecutando seed de datos iniciales via TypeScript..."
+        npx tsx src/db/seed.ts
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warn "Seed TypeScript fallo. La app puede arrancar sin datos semilla."
+        }
+        else {
+            Write-Ok "Seed completado."
+        }
+    }
+    elseif ($script:IsOneDrivePath) {
         Write-Step "Ejecutando seed de recuperacion (modo OneDrive)..."
         npm run e2e:seed:recovery
         if ($LASTEXITCODE -ne 0) {
