@@ -9,6 +9,7 @@ import {
   TablaComparativa,
   type FilaComparativa,
 } from '@/components/tables/TablaComparativa';
+import { D3HomicidiosTable } from '@/components/tables/D3HomicidiosTable';
 import { ExportButtons } from '@/components/export/ExportButtons';
 import { D1ExportButtons } from '@/components/export/D1ExportButtons';
 import {
@@ -346,20 +347,37 @@ export function DepartamentoContent({
 
           <SectionHeader titulo="Datos Comparativos" color={departamento.color} />
           <div className="space-y-6">
-            {tablasRenderizadas.map(tabla => (
-              <TablaComparativa
-                key={tabla.tablaId}
-                titulo={tabla.nombre}
-                tablaId={tabla.tablaId}
-                tablaConfigId={tabla.id}
-                departamento={departamento.nombre}
-                color={departamento.color}
-                labelPeriodoAnterior={periodoAnteriorLabel}
-                labelPeriodoActual={periodoActualLabel}
-                filas={tabla.datos}
-                onDataChange={handleDataChange}
-              />
-            ))}
+            {tablasRenderizadas.map(tabla => {
+              if (tabla.tablaId === 'd3-homicidios-ambito-movil') {
+                return (
+                  <D3HomicidiosTable
+                    key={tabla.tablaId}
+                    titulo={tabla.nombre}
+                    tablaId={tabla.tablaId}
+                    tablaConfigId={tabla.id}
+                    color={departamento.color}
+                    labelPeriodoAnterior={periodoAnteriorLabel}
+                    labelPeriodoActual={periodoActualLabel}
+                    filas={tabla.datos}
+                    onDataChange={handleDataChange}
+                  />
+                );
+              }
+              return (
+                <TablaComparativa
+                  key={tabla.tablaId}
+                  titulo={tabla.nombre}
+                  tablaId={tabla.tablaId}
+                  tablaConfigId={tabla.id}
+                  departamento={departamento.nombre}
+                  color={departamento.color}
+                  labelPeriodoAnterior={periodoAnteriorLabel}
+                  labelPeriodoActual={periodoActualLabel}
+                  filas={tabla.datos}
+                  onDataChange={handleDataChange}
+                />
+              );
+            })}
           </div>
 
           {tablasState.length === 0 && (
