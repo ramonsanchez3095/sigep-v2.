@@ -303,126 +303,26 @@ const allTablas: Record<string, TablaData[]> = {
       nombre: 'Víctimas de Homicidios Dolosos — Por Ámbito/Situación y Móvil de Crimen',
       datos: [
         // — Hechos por ámbito/situación —
-        // ÁMBITO PÚBLICO
-        { filaId: 'ambito_publico_hechos_urc', label: 'ÁMBITO PÚBLICO — Hechos U.R.C', periodoAnterior: 19, periodoActual: 8 },
-        { filaId: 'ambito_publico_hechos_urn', label: 'ÁMBITO PÚBLICO — Hechos U.R.N', periodoAnterior: 3, periodoActual: 2 },
-        { filaId: 'ambito_publico_hechos_urs', label: 'ÁMBITO PÚBLICO — Hechos U.R.S', periodoAnterior: 3, periodoActual: 1 },
-        { filaId: 'ambito_publico_hechos_ure', label: 'ÁMBITO PÚBLICO — Hechos U.R.E', periodoAnterior: 1, periodoActual: 1 },
-        { filaId: 'ambito_publico_hechos_uro', label: 'ÁMBITO PÚBLICO — Hechos U.R.O', periodoAnterior: 1, periodoActual: 1 },
-
-        // ÁMBITO PRIVADO
-        { filaId: 'ambito_privado_hechos_urc', label: 'ÁMBITO PRIVADO — Hechos U.R.C', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'ambito_privado_hechos_urn', label: 'ÁMBITO PRIVADO — Hechos U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'ambito_privado_hechos_urs', label: 'ÁMBITO PRIVADO — Hechos U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ambito_privado_hechos_ure', label: 'ÁMBITO PRIVADO — Hechos U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ambito_privado_hechos_uro', label: 'ÁMBITO PRIVADO — Hechos U.R.O', periodoAnterior: 1, periodoActual: 0 },
-
-        // VIVIENDA PARTICULAR
-        { filaId: 'vivienda_particular_hechos_urc', label: 'VIVIENDA PARTICULAR — Hechos U.R.C', periodoAnterior: 2, periodoActual: 5 },
-        { filaId: 'vivienda_particular_hechos_urn', label: 'VIVIENDA PARTICULAR — Hechos U.R.N', periodoAnterior: 3, periodoActual: 0 },
-        { filaId: 'vivienda_particular_hechos_urs', label: 'VIVIENDA PARTICULAR — Hechos U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'vivienda_particular_hechos_ure', label: 'VIVIENDA PARTICULAR — Hechos U.R.E', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'vivienda_particular_hechos_uro', label: 'VIVIENDA PARTICULAR — Hechos U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // CONTEXTO DE ENCIERRO
-        { filaId: 'contexto_encierro_hechos_urc', label: 'CONTEXTO DE ENCIERRO — Hechos U.R.C', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'contexto_encierro_hechos_urn', label: 'CONTEXTO DE ENCIERRO — Hechos U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'contexto_encierro_hechos_urs', label: 'CONTEXTO DE ENCIERRO — Hechos U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'contexto_encierro_hechos_ure', label: 'CONTEXTO DE ENCIERRO — Hechos U.R.E', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'contexto_encierro_hechos_uro', label: 'CONTEXTO DE ENCIERRO — Hechos U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
+        { filaId: 'ambito_publico_hechos',      label: 'ÁMBITO PÚBLICO — Hechos',       periodoAnterior: 27, periodoActual: 13 },
+        { filaId: 'ambito_privado_hechos',      label: 'ÁMBITO PRIVADO — Hechos',       periodoAnterior: 2,  periodoActual: 1  },
+        { filaId: 'vivienda_particular_hechos', label: 'VIVIENDA PARTICULAR — Hechos',  periodoAnterior: 8,  periodoActual: 5  },
+        { filaId: 'contexto_encierro_hechos',   label: 'CONTEXTO DE ENCIERRO — Hechos', periodoAnterior: 2,  periodoActual: 2  },
         // — Hechos por móvil de crimen —
-        // VIOLENCIA INTERVECINAL
-        { filaId: 'violencia_intervecinal_urc', label: 'VIOLENCIA INTERVECINAL — U.R.C', periodoAnterior: 6, periodoActual: 1 },
-        { filaId: 'violencia_intervecinal_urn', label: 'VIOLENCIA INTERVECINAL — U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'violencia_intervecinal_urs', label: 'VIOLENCIA INTERVECINAL — U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'violencia_intervecinal_ure', label: 'VIOLENCIA INTERVECINAL — U.R.E', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'violencia_intervecinal_uro', label: 'VIOLENCIA INTERVECINAL — U.R.O', periodoAnterior: 1, periodoActual: 0 },
-
-        // VIOLENCIA INTRAFAMILIAR
-        { filaId: 'violencia_intrafamiliar_urc', label: 'VIOLENCIA INTRAFAMILIAR — U.R.C', periodoAnterior: 1, periodoActual: 2 },
-        { filaId: 'violencia_intrafamiliar_urn', label: 'VIOLENCIA INTRAFAMILIAR — U.R.N', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'violencia_intrafamiliar_urs', label: 'VIOLENCIA INTRAFAMILIAR — U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'violencia_intrafamiliar_ure', label: 'VIOLENCIA INTRAFAMILIAR — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'violencia_intrafamiliar_uro', label: 'VIOLENCIA INTRAFAMILIAR — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // LEGÍTIMA DEFENSA
-        { filaId: 'legitima_defensa_urc', label: 'LEGÍTIMA DEFENSA — U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'legitima_defensa_urn', label: 'LEGÍTIMA DEFENSA — U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'legitima_defensa_urs', label: 'LEGÍTIMA DEFENSA — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'legitima_defensa_ure', label: 'LEGÍTIMA DEFENSA — U.R.E', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'legitima_defensa_uro', label: 'LEGÍTIMA DEFENSA — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // OCASIÓN DE ROBO
-        { filaId: 'ocasion_robo_urc', label: 'OCASIÓN DE ROBO — U.R.C', periodoAnterior: 5, periodoActual: 2 },
-        { filaId: 'ocasion_robo_urn', label: 'OCASIÓN DE ROBO — U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'ocasion_robo_urs', label: 'OCASIÓN DE ROBO — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ocasion_robo_ure', label: 'OCASIÓN DE ROBO — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ocasion_robo_uro', label: 'OCASIÓN DE ROBO — U.R.O', periodoAnterior: 1, periodoActual: 0 },
-
-        // INTERVENCIÓN POLICIAL
-        { filaId: 'intervencion_policial_urc', label: 'INTERVENCIÓN POLICIAL — U.R.C', periodoAnterior: 3, periodoActual: 1 },
-        { filaId: 'intervencion_policial_urn', label: 'INTERVENCIÓN POLICIAL — U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'intervencion_policial_urs', label: 'INTERVENCIÓN POLICIAL — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'intervencion_policial_ure', label: 'INTERVENCIÓN POLICIAL — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'intervencion_policial_uro', label: 'INTERVENCIÓN POLICIAL — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // POSIBLE AJUSTE DE CUENTA
-        { filaId: 'ajuste_cuenta_urc', label: 'POSIBLE AJUSTE DE CUENTA — U.R.C', periodoAnterior: 3, periodoActual: 1 },
-        { filaId: 'ajuste_cuenta_urn', label: 'POSIBLE AJUSTE DE CUENTA — U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'ajuste_cuenta_urs', label: 'POSIBLE AJUSTE DE CUENTA — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ajuste_cuenta_ure', label: 'POSIBLE AJUSTE DE CUENTA — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ajuste_cuenta_uro', label: 'POSIBLE AJUSTE DE CUENTA — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // FEMICIDIO
-        { filaId: 'femicidio_urc', label: 'FEMICIDIO — U.R.C', periodoAnterior: 1, periodoActual: 6 },
-        { filaId: 'femicidio_urn', label: 'FEMICIDIO — U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'femicidio_urs', label: 'FEMICIDIO — U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'femicidio_ure', label: 'FEMICIDIO — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'femicidio_uro', label: 'FEMICIDIO — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // CONFLICTO PASIONAL
-        { filaId: 'conflicto_pasional_urc', label: 'CONFLICTO PASIONAL — U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'conflicto_pasional_urn', label: 'CONFLICTO PASIONAL — U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'conflicto_pasional_urs', label: 'CONFLICTO PASIONAL — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'conflicto_pasional_ure', label: 'CONFLICTO PASIONAL — U.R.E', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'conflicto_pasional_uro', label: 'CONFLICTO PASIONAL — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // RIÑA (V/PÚBLICA Y/O V/PARTICULAR)
-        { filaId: 'rina_publica_particular_urc', label: 'RIÑA (V/PÚBLICA Y/O V/PARTICULAR) — U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'rina_publica_particular_urn', label: 'RIÑA (V/PÚBLICA Y/O V/PARTICULAR) — U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'rina_publica_particular_urs', label: 'RIÑA (V/PÚBLICA Y/O V/PARTICULAR) — U.R.S', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'rina_publica_particular_ure', label: 'RIÑA (V/PÚBLICA Y/O V/PARTICULAR) — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'rina_publica_particular_uro', label: 'RIÑA (V/PÚBLICA Y/O V/PARTICULAR) — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // CONFLICTO EN CONTEXTO DE ENCIERRO
-        { filaId: 'conflicto_encierro_urc', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO — U.R.C', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'conflicto_encierro_urn', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO — U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'conflicto_encierro_urs', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'conflicto_encierro_ure', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO — U.R.E', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'conflicto_encierro_uro', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // PRETERINTENCIONAL
-        { filaId: 'preterintencional_urc', label: 'PRETERINTENCIONAL — U.R.C', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'preterintencional_urn', label: 'PRETERINTENCIONAL — U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'preterintencional_urs', label: 'PRETERINTENCIONAL — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'preterintencional_ure', label: 'PRETERINTENCIONAL — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'preterintencional_uro', label: 'PRETERINTENCIONAL — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // CULPOSO (POR OTROS HECHOS)
-        { filaId: 'culposo_otros_hechos_urc', label: 'CULPOSO (POR OTROS HECHOS) — U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'culposo_otros_hechos_urn', label: 'CULPOSO (POR OTROS HECHOS) — U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'culposo_otros_hechos_urs', label: 'CULPOSO (POR OTROS HECHOS) — U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'culposo_otros_hechos_ure', label: 'CULPOSO (POR OTROS HECHOS) — U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'culposo_otros_hechos_uro', label: 'CULPOSO (POR OTROS HECHOS) — U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        // SIN FACTOR DE INCIDENCIA (P/INVEST.)
-        { filaId: 'sin_factor_incidencia_urc', label: 'SIN FACTOR DE INCIDENCIA (P/INVEST.) — U.R.C', periodoAnterior: 1, periodoActual: 1 },
-        { filaId: 'sin_factor_incidencia_urn', label: 'SIN FACTOR DE INCIDENCIA (P/INVEST.) — U.R.N', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'sin_factor_incidencia_urs', label: 'SIN FACTOR DE INCIDENCIA (P/INVEST.) — U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'sin_factor_incidencia_ure', label: 'SIN FACTOR DE INCIDENCIA (P/INVEST.) — U.R.E', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'sin_factor_incidencia_uro', label: 'SIN FACTOR DE INCIDENCIA (P/INVEST.) — U.R.O', periodoAnterior: 0, periodoActual: 1 },
-
+        { filaId: 'violencia_intervecinal',     label: 'VIOLENCIA INTERVECINAL',                    periodoAnterior: 10, periodoActual: 1  },
+        { filaId: 'violencia_intrafamiliar',    label: 'VIOLENCIA INTRAFAMILIAR',                   periodoAnterior: 4,  periodoActual: 2  },
+        { filaId: 'legitima_defensa',           label: 'LEGÍTIMA DEFENSA',                          periodoAnterior: 0,  periodoActual: 0  },
+        { filaId: 'ocasion_robo',               label: 'OCASIÓN DE ROBO',                           periodoAnterior: 7,  periodoActual: 2  },
+        { filaId: 'intervencion_policial',      label: 'INTERVENCIÓN POLICIAL',                     periodoAnterior: 4,  periodoActual: 1  },
+        { filaId: 'ajuste_cuenta',              label: 'POSIBLE AJUSTE DE CUENTA',                  periodoAnterior: 3,  periodoActual: 2  },
+        { filaId: 'femicidio',                  label: 'FEMICIDIO',                                 periodoAnterior: 2,  periodoActual: 7  },
+        { filaId: 'conflicto_pasional',         label: 'CONFLICTO PASIONAL',                        periodoAnterior: 0,  periodoActual: 1  },
+        { filaId: 'rina_publica_particular',    label: 'RIÑA (V/PÚBLICA Y/O V/PARTICULAR)',         periodoAnterior: 0,  periodoActual: 1  },
+        { filaId: 'conflicto_encierro',         label: 'CONFLICTO EN CONTEXTO DE ENCIERRO',        periodoAnterior: 2,  periodoActual: 2  },
+        { filaId: 'preterintencional',          label: 'PRETERINTENCIONAL',                         periodoAnterior: 1,  periodoActual: 0  },
+        { filaId: 'culposo_otros_hechos',       label: 'CULPOSO (POR OTROS HECHOS)',                periodoAnterior: 1,  periodoActual: 0  },
+        { filaId: 'sin_factor_incidencia',      label: 'SIN FACTOR DE INCIDENCIA (P/INVEST.)',      periodoAnterior: 4,  periodoActual: 2  },
+        // — Total hechos (único, eliminado el duplicado) —
+        { filaId: 'total_hechos',               label: 'TOTALES — Hechos',                          periodoAnterior: 39, periodoActual: 21 },
         // — Víctimas por ámbito/situación —
         { filaId: 'ambito_publico_victimas',      label: 'ÁMBITO PÚBLICO — Víctimas',       periodoAnterior: 29, periodoActual: 13 },
         { filaId: 'ambito_privado_victimas',      label: 'ÁMBITO PRIVADO — Víctimas',       periodoAnterior: 2,  periodoActual: 1  },
