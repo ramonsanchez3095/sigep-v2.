@@ -9,7 +9,11 @@ import {
   TablaComparativa,
   type FilaComparativa,
 } from '@/components/tables/TablaComparativa';
-import { D3HomicidiosTable } from '@/components/tables/D3HomicidiosTable';
+import {
+  D3HomicidiosTable,
+  HECHOS_POR_AMBITO,
+  HECHOS_POR_MOVIL,
+} from '@/components/tables/D3HomicidiosTable';
 import { ExportButtons } from '@/components/export/ExportButtons';
 import { D1ExportButtons } from '@/components/export/D1ExportButtons';
 import {
@@ -347,37 +351,42 @@ export function DepartamentoContent({
 
           <SectionHeader titulo="Datos Comparativos" color={departamento.color} />
           <div className="space-y-6">
-            {tablasRenderizadas.map(tabla => {
-              if (tabla.tablaId === 'd3-homicidios-ambito-movil') {
-                return (
-                  <D3HomicidiosTable
-                    key={tabla.tablaId}
-                    titulo={tabla.nombre}
-                    tablaId={tabla.tablaId}
-                    tablaConfigId={tabla.id}
-                    color={departamento.color}
-                    labelPeriodoAnterior={periodoAnteriorLabel}
-                    labelPeriodoActual={periodoActualLabel}
-                    filas={tabla.datos}
-                    onDataChange={handleDataChange}
-                  />
-                );
-              }
-              return (
-                <TablaComparativa
-                  key={tabla.tablaId}
-                  titulo={tabla.nombre}
-                  tablaId={tabla.tablaId}
-                  tablaConfigId={tabla.id}
-                  departamento={departamento.nombre}
+            {/* Tablas especializadas de D3 con desglose por Unidad Regional */}
+            {departamento.codigo === 'd3' && (
+              <>
+                <D3HomicidiosTable
+                  titulo="Hechos de Homicidios Dolosos — Por Ámbito/Situación"
+                  labelAnterior={periodoAnteriorLabel}
+                  labelActual={periodoActualLabel}
+                  labelTotal="CANTIDAD DE HECHOS POR MÓVIL DE CRIMEN"
+                  grupos={HECHOS_POR_AMBITO}
                   color={departamento.color}
-                  labelPeriodoAnterior={periodoAnteriorLabel}
-                  labelPeriodoActual={periodoActualLabel}
-                  filas={tabla.datos}
-                  onDataChange={handleDataChange}
                 />
-              );
-            })}
+                <D3HomicidiosTable
+                  titulo="Hechos de Homicidios Dolosos — Por Móvil de Crimen"
+                  labelAnterior={periodoAnteriorLabel}
+                  labelActual={periodoActualLabel}
+                  labelTotal="CANTIDAD DE HECHOS POR MÓVIL DE CRIMEN"
+                  grupos={HECHOS_POR_MOVIL}
+                  color={departamento.color}
+                />
+              </>
+            )}
+
+            {tablasRenderizadas.map(tabla => (
+              <TablaComparativa
+                key={tabla.tablaId}
+                titulo={tabla.nombre}
+                tablaId={tabla.tablaId}
+                tablaConfigId={tabla.id}
+                departamento={departamento.nombre}
+                color={departamento.color}
+                labelPeriodoAnterior={periodoAnteriorLabel}
+                labelPeriodoActual={periodoActualLabel}
+                filas={tabla.datos}
+                onDataChange={handleDataChange}
+              />
+            ))}
           </div>
 
           {tablasState.length === 0 && (
