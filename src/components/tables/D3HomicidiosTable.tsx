@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Fragment } from 'react';
 import { Edit2, Save, X, Activity, Scale } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '@/store';
@@ -301,7 +301,7 @@ export function D3HomicidiosTable({
                 const total2025 = getCatTotal(cat.id, 'periodoActual');
 
                 return (
-                  <>
+                  <Fragment key={cat.id}>
                     {/* Fila Año 2024 */}
                     <tr
                       key={`${cat.id}_2024`}
@@ -368,46 +368,11 @@ export function D3HomicidiosTable({
                         {total2025}
                       </td>
                     </tr>
-                  </>
+                  </Fragment>
                 );
               })}
 
-              {/* Fila TOTALES POR REGIONAL (Ámbito) */}
-              <tr className="border-t-2 border-slate-400 bg-slate-900 text-white font-bold">
-                <td rowSpan={2} className="border-r border-b border-slate-700 px-4 py-3 align-middle uppercase">
-                  TOTALES POR REGIONAL
-                </td>
-                <td className="border-r border-b border-slate-700 px-2 py-2 text-center text-red-400 font-bold">
-                  2024
-                </td>
-                {REGIONALS.map(ur => (
-                  <td
-                    key={`total_ambito_2024_${ur}`}
-                    className="border-r border-b border-slate-700 px-3 py-2 text-center text-red-400 tabular-nums"
-                  >
-                    {getSectionUrTotal(AMBITO_CATEGORIES, ur, 'periodoAnterior')}
-                  </td>
-                ))}
-                <td className="border-b border-slate-700 px-4 py-2 text-center text-red-400 bg-slate-800 tabular-nums">
-                  {getSectionGrandTotal(AMBITO_CATEGORIES, 'periodoAnterior')}
-                </td>
-              </tr>
-              <tr className="bg-slate-900 text-white font-bold border-b-4 border-slate-400">
-                <td className="border-r border-slate-700 px-2 py-2 text-center font-bold">
-                  2025
-                </td>
-                {REGIONALS.map(ur => (
-                  <td
-                    key={`total_ambito_2025_${ur}`}
-                    className="border-r border-slate-700 px-3 py-2 text-center tabular-nums"
-                  >
-                    {getSectionUrTotal(AMBITO_CATEGORIES, ur, 'periodoActual')}
-                  </td>
-                ))}
-                <td className="px-4 py-2 text-center bg-slate-800 tabular-nums">
-                  {getSectionGrandTotal(AMBITO_CATEGORIES, 'periodoActual')}
-                </td>
-              </tr>
+
 
               {/* SECCIÓN 2: POR MÓVIL DE CRIMEN */}
               <tr className="bg-[#b5d2f0] text-slate-800 border-t border-b border-slate-300 font-bold">
@@ -421,7 +386,7 @@ export function D3HomicidiosTable({
                 const total2025 = getCatTotal(cat.id, 'periodoActual');
 
                 return (
-                  <>
+                  <Fragment key={cat.id}>
                     {/* Fila Año 2024 */}
                     <tr
                       key={`${cat.id}_2024`}
@@ -487,7 +452,7 @@ export function D3HomicidiosTable({
                         {total2025}
                       </td>
                     </tr>
-                  </>
+                  </Fragment>
                 );
               })}
 
@@ -511,7 +476,7 @@ export function D3HomicidiosTable({
                   {getSectionGrandTotal(MOVIL_CATEGORIES, 'periodoAnterior')}
                 </td>
               </tr>
-              <tr className="bg-slate-900 text-white font-bold">
+              <tr className="bg-slate-900 text-white font-bold border-b-4 border-slate-400">
                 <td className="border-r border-slate-700 px-2 py-2 text-center font-bold">
                   2025
                 </td>

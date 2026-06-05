@@ -21,8 +21,19 @@ export function Configurar2FAContent() {
     setError('');
     try {
       const result = await initTotpSetup();
-      setQrDataUrl(result.qrDataUrl);
-      setManualKey(result.manualKey);
+      
+      if (!result.success) {
+        if (result.requireRelogin) {
+          window.location.href = '/api/auth/signout?callbackUrl=/login';
+          return;
+        }
+        setError(result.error ?? 'Error al iniciar configuración.');
+        setLoading(false);
+        return;
+      }
+      
+      setQrDataUrl(result.qrDataUrl!);
+      setManualKey(result.manualKey!);
       setStep('setup');
     } catch {
       setError('Error al generar el código QR. Intente de nuevo.');

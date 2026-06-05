@@ -29,7 +29,9 @@ import { revalidatePath } from 'next/cache';
 
 export async function initTotpSetup() {
   const session = await auth();
-  if (!session?.user?.id) throw new Error('No autenticado');
+  if (!session?.user?.id) {
+    return { success: false, error: 'No autenticado', requireRelogin: true };
+  }
 
   const [user] = await db
     .select({ totpEnabled: usuarios.totpEnabled })
@@ -37,8 +39,13 @@ export async function initTotpSetup() {
     .where(eq(usuarios.id, session.user.id))
     .limit(1);
 
-  if (!user) throw new Error('Usuario no encontrado');
-  if (user.totpEnabled) throw new Error('2FA ya está configurado');
+  if (!user) {
+    return { success: false, error: 'Usuario no encontrado', requireRelogin: true };
+  }
+  
+  if (user.totpEnabled) {
+    return { success: false, error: '2FA ya está configurado' };
+  }
 
   const { secret, uri } = generateTotpSecret(session.user.username);
   const qrDataUrl = await generateQrDataUrl(uri);
@@ -50,7 +57,7 @@ export async function initTotpSetup() {
     .set({ totpSecret: encrypted, updatedAt: new Date() })
     .where(eq(usuarios.id, session.user.id));
 
-  return { qrDataUrl, manualKey: secret };
+  return { success: true, qrDataUrl, manualKey: secret };
 }
 
 export async function confirmTotpSetup(code: string) {
