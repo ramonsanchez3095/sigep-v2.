@@ -292,7 +292,7 @@ const d3Seed = d3SeedBase.map(table => {
       ],
     };
   }
-  if (table.tablaId === 'd3-homicidios-ambito') {
+  if (table.tablaId === 'd3-homicidios-dolosos') {
     return {
       ...table,
       datos: [
@@ -319,13 +319,7 @@ const d3Seed = d3SeedBase.map(table => {
         { filaId: 'encierro_urs', label: 'CONTEXTO DE ENCIERRO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
         { filaId: 'encierro_ure', label: 'CONTEXTO DE ENCIERRO - U.R.E', periodoAnterior: 0, periodoActual: 1 },
         { filaId: 'encierro_uro', label: 'CONTEXTO DE ENCIERRO - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-      ],
-    };
-  }
-  if (table.tablaId === 'd3-homicidios-movil') {
-    return {
-      ...table,
-      datos: [
+
         { filaId: 'movil_interpersonal_urc', label: 'VIOLENCIA INTERPERSONAL - U.R.C', periodoAnterior: 6, periodoActual: 1 },
         { filaId: 'movil_interpersonal_urn', label: 'VIOLENCIA INTERPERSONAL - U.R.N', periodoAnterior: 1, periodoActual: 0 },
         { filaId: 'movil_interpersonal_urs', label: 'VIOLENCIA INTERPERSONAL - U.R.S', periodoAnterior: 1, periodoActual: 0 },

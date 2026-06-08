@@ -58,15 +58,10 @@ const D3_TABLE_LAYOUT: Record<string, { badge: string; span?: 'full'; note?: str
     span: 'full',
     note: 'Detalle de la modalidad empleada en cada caso de suicidio registrado.',
   },
-  'd3-homicidios-ambito': {
-    badge: 'Homicidios',
+  'd3-homicidios-dolosos': {
+    badge: 'Homicidios Dolosos',
     span: 'full',
-    note: 'Homicidios dolosos distribuidos por el ámbito o situación física de ocurrencia.',
-  },
-  'd3-homicidios-movil': {
-    badge: 'Móvil de Crimen',
-    span: 'full',
-    note: 'Estadísticas de hechos de homicidios dolosos clasificadas por el móvil de crimen.',
+    note: 'Estadísticas de hechos de homicidios dolosos clasificadas por ámbito/situación y móvil de crimen.',
   },
 };
 
@@ -235,8 +230,7 @@ export default function D3DepartamentoView({
             {section.tables.map(table => {
               const presentation = D3_TABLE_LAYOUT[table.tableId];
               const isHomicidiosTable =
-                table.tableId === 'd3-homicidios-ambito' ||
-                table.tableId === 'd3-homicidios-movil';
+                table.tableId === 'd3-homicidios-dolosos';
 
               return (
                 <div

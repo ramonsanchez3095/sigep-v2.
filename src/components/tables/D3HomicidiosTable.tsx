@@ -116,8 +116,8 @@ export function D3HomicidiosTable({
     });
   };
 
-  // Agrupar filas por categoría (ej. ÁMBITO PÚBLICO, ÁMBITO PRIVADO, etc.)
-  const groupedCategories = useMemo(() => {
+  // Agrupar filas por categoría (ej. ÁMBITO PÚBLICO, ÁMBITO PRIVADO, etc.) y clasificar en ámbitos, móviles y totales
+  const groupedData = useMemo(() => {
     const categoriesMap = new Map<string, GroupedCategory>();
 
     activeTable.rows.forEach(row => {
@@ -148,7 +148,16 @@ export function D3HomicidiosTable({
       }
     });
 
-    return Array.from(categoriesMap.values());
+    const allCategories = Array.from(categoriesMap.values());
+    const ambito = allCategories.filter(c => !c.categoryKey.startsWith('movil_') && c.categoryKey !== 'totales');
+    const movil = allCategories.filter(c => c.categoryKey.startsWith('movil_'));
+    const total = allCategories.find(c => c.categoryKey === 'totales');
+
+    return {
+      ambitoCategories: ambito,
+      movilCategories: movil,
+      totalesCategory: total,
+    };
   }, [activeTable.rows]);
 
   const canEdit = edicionHabilitada && activeTable.canEdit && sourceTable;
@@ -161,6 +170,104 @@ export function D3HomicidiosTable({
 
   const añoAnterior = parseYear(labelPeriodoAnterior);
   const añoActual = parseYear(labelPeriodoActual);
+
+  // Renderizador para un bloque de categoría (anterior y actual)
+  const renderCategoryRows = (cat: GroupedCategory) => {
+    const uList = [cat.urc, cat.urn, cat.urs, cat.ure, cat.uro];
+
+    // Sumas horizontales
+    const sumAnterior = uList.reduce((acc, curr) => acc + (curr?.periodoAnterior ?? 0), 0);
+    const sumActual = uList.reduce((acc, curr) => acc + (curr?.periodoActual ?? 0), 0);
+
+    const trBgClass = cat.isTotal
+      ? 'bg-slate-900 text-white font-bold hover:bg-slate-900 border-t-2 border-slate-700'
+      : 'border-b border-slate-100 hover:bg-slate-50/50';
+
+    return (
+      <optgroup key={cat.categoryKey}>
+        {/* Fila Período Anterior (2024) */}
+        <tr className={clsx(trBgClass)}>
+          {/* Celda de la Categoría con RowSpan 2 */}
+          <td
+            rowSpan={2}
+            className={clsx(
+              'px-4 py-3 font-semibold uppercase border-r border-slate-200/60 align-middle w-[35%]',
+              cat.isTotal ? 'bg-slate-950 text-white' : 'text-slate-900 bg-slate-50/30'
+            )}
+          >
+            {cat.label}
+          </td>
+
+          {/* Año anterior */}
+          <td className="px-3 py-2.5 text-center font-semibold border-r border-slate-200/60 text-red-600">
+            {añoAnterior}
+          </td>
+
+          {/* Valores de las UR para año anterior */}
+          {['urc', 'urn', 'urs', 'ure', 'uro'].map((ur) => {
+            const row = cat[ur] as D3RenderedRow | undefined;
+            const draftRow = draftRows.find(d => d.id === row?.rowId);
+            const value = draftRow ? draftRow.periodoAnterior : (row?.periodoAnterior ?? 0);
+
+            return (
+              <td key={`${cat.categoryKey}_${ur}_ant`} className="px-3 py-2 border-r border-slate-200/60 text-center font-medium tabular-nums">
+                {editando && row?.editable ? (
+                  <input
+                    type="number"
+                    value={value}
+                    onChange={e => handleChange(row.rowId, 'periodoAnterior', e.target.value)}
+                    className="w-16 rounded border border-slate-300 px-1 py-0.5 text-center text-slate-900 focus:border-slate-500 outline-none"
+                  />
+                ) : (
+                  row ? row.periodoAnterior : '-'
+                )}
+              </td>
+            );
+          })}
+
+          {/* Total horizontal del año anterior */}
+          <td className="px-4 py-2.5 text-center font-bold tabular-nums text-red-600 bg-red-50/30">
+            {sumAnterior}
+          </td>
+        </tr>
+
+        {/* Fila Período Actual (2025) */}
+        <tr className={clsx(trBgClass)}>
+          {/* Año actual */}
+          <td className="px-3 py-2.5 text-center font-semibold border-r border-slate-200/60 text-slate-900">
+            {añoActual}
+          </td>
+
+          {/* Valores de las UR para año actual */}
+          {['urc', 'urn', 'urs', 'ure', 'uro'].map((ur) => {
+            const row = cat[ur] as D3RenderedRow | undefined;
+            const draftRow = draftRows.find(d => d.id === row?.rowId);
+            const value = draftRow ? draftRow.periodoActual : (row?.periodoActual ?? 0);
+
+            return (
+              <td key={`${cat.categoryKey}_${ur}_act`} className="px-3 py-2 border-r border-slate-200/60 text-center font-medium tabular-nums">
+                {editando && row?.editable ? (
+                  <input
+                    type="number"
+                    value={value}
+                    onChange={e => handleChange(row.rowId, 'periodoActual', e.target.value)}
+                    className="w-16 rounded border border-slate-300 px-1 py-0.5 text-center text-slate-900 focus:border-slate-500 outline-none"
+                  />
+                ) : (
+                  row ? row.periodoActual : '-'
+                )}
+              </td>
+            );
+          })}
+
+          {/* Total horizontal del año actual */}
+          <td className="px-4 py-2.5 text-center font-bold tabular-nums text-slate-900 bg-slate-100/30">
+            {sumActual}
+          </td>
+        </tr>
+      </optgroup>
+    );
+  };
 
   return (
     <div className="card overflow-hidden rounded-[26px] border border-slate-200/80 shadow-[0_16px_38px_rgba(15,29,48,0.08)] bg-white">
@@ -228,7 +335,7 @@ export function D3HomicidiosTable({
           <thead>
             <tr className="bg-[#f8f1df] text-slate-700">
               <th className="border-b border-r border-[#e8dcc0] px-4 py-3 text-left font-semibold uppercase tracking-[0.08em]">
-                {table.tableId === 'd3-homicidios-ambito' ? 'Ámbito / Situación' : 'Móvil de Crimen'}
+                Ámbito / Móvil de Crimen
               </th>
               <th className="border-b border-r border-[#e8dcc0] px-3 py-3 text-center font-semibold uppercase tracking-[0.08em] w-20">
                 Año
@@ -254,102 +361,24 @@ export function D3HomicidiosTable({
             </tr>
           </thead>
           <tbody>
-            {groupedCategories.map(cat => {
-              const uList = [cat.urc, cat.urn, cat.urs, cat.ure, cat.uro];
+            {/* Sección 1: Ámbito / Situación */}
+            <tr className="bg-slate-100 border-y border-slate-200">
+              <td colSpan={8} className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                Ámbito / Situación
+              </td>
+            </tr>
+            {groupedData.ambitoCategories.map(renderCategoryRows)}
 
-              // Sumas horizontales
-              const sumAnterior = uList.reduce((acc, curr) => acc + (curr?.periodoAnterior ?? 0), 0);
-              const sumActual = uList.reduce((acc, curr) => acc + (curr?.periodoActual ?? 0), 0);
+            {/* Sección 2: Móvil de Crimen */}
+            <tr className="bg-slate-100 border-y border-slate-200">
+              <td colSpan={8} className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                Móvil de Crimen
+              </td>
+            </tr>
+            {groupedData.movilCategories.map(renderCategoryRows)}
 
-              const trBgClass = cat.isTotal
-                ? 'bg-slate-900 text-white font-bold hover:bg-slate-900 border-t-2 border-slate-700'
-                : 'border-b border-slate-100 hover:bg-slate-50/50';
-
-              return (
-                <>
-                  {/* Fila Período Anterior (2024) */}
-                  <tr className={clsx(trBgClass)}>
-                    {/* Celda de la Categoría con RowSpan 2 */}
-                    <td
-                      rowSpan={2}
-                      className={clsx(
-                        'px-4 py-3 font-semibold uppercase border-r border-slate-200/60 align-middle',
-                        cat.isTotal ? 'bg-slate-950 text-white' : 'text-slate-900 bg-slate-50/30'
-                      )}
-                    >
-                      {cat.label}
-                    </td>
-
-                    {/* Año anterior */}
-                    <td className="px-3 py-2.5 text-center font-semibold border-r border-slate-200/60 text-red-600">
-                      {añoAnterior}
-                    </td>
-
-                    {/* Valores de las UR para año anterior */}
-                    {['urc', 'urn', 'urs', 'ure', 'uro'].map((ur) => {
-                      const row = cat[ur] as D3RenderedRow | undefined;
-                      const draftRow = draftRows.find(d => d.id === row?.rowId);
-                      const value = draftRow ? draftRow.periodoAnterior : (row?.periodoAnterior ?? 0);
-
-                      return (
-                        <td key={`${cat.categoryKey}_${ur}_ant`} className="px-3 py-2 border-r border-slate-200/60 text-center font-medium tabular-nums">
-                          {editando && row?.editable ? (
-                            <input
-                              type="number"
-                              value={value}
-                              onChange={e => handleChange(row.rowId, 'periodoAnterior', e.target.value)}
-                              className="w-16 rounded border border-slate-300 px-1 py-0.5 text-center text-slate-900 focus:border-slate-500 outline-none"
-                            />
-                          ) : (
-                            row ? row.periodoAnterior : '-'
-                          )}
-                        </td>
-                      );
-                    })}
-
-                    {/* Total horizontal del año anterior */}
-                    <td className="px-4 py-2.5 text-center font-bold tabular-nums text-red-600 bg-red-50/30">
-                      {sumAnterior}
-                    </td>
-                  </tr>
-
-                  {/* Fila Período Actual (2025) */}
-                  <tr className={clsx(trBgClass)}>
-                    {/* Año actual */}
-                    <td className="px-3 py-2.5 text-center font-semibold border-r border-slate-200/60 text-slate-900">
-                      {añoActual}
-                    </td>
-
-                    {/* Valores de las UR para año actual */}
-                    {['urc', 'urn', 'urs', 'ure', 'uro'].map((ur) => {
-                      const row = cat[ur] as D3RenderedRow | undefined;
-                      const draftRow = draftRows.find(d => d.id === row?.rowId);
-                      const value = draftRow ? draftRow.periodoActual : (row?.periodoActual ?? 0);
-
-                      return (
-                        <td key={`${cat.categoryKey}_${ur}_act`} className="px-3 py-2 border-r border-slate-200/60 text-center font-medium tabular-nums">
-                          {editando && row?.editable ? (
-                            <input
-                              type="number"
-                              value={value}
-                              onChange={e => handleChange(row.rowId, 'periodoActual', e.target.value)}
-                              className="w-16 rounded border border-slate-300 px-1 py-0.5 text-center text-slate-900 focus:border-slate-500 outline-none"
-                            />
-                          ) : (
-                            row ? row.periodoActual : '-'
-                          )}
-                        </td>
-                      );
-                    })}
-
-                    {/* Total horizontal del año actual */}
-                    <td className="px-4 py-2.5 text-center font-bold tabular-nums text-slate-900 bg-slate-100/30">
-                      {sumActual}
-                    </td>
-                  </tr>
-                </>
-              );
-            })}
+            {/* Totales por regional */}
+            {groupedData.totalesCategory ? renderCategoryRows(groupedData.totalesCategory) : null}
           </tbody>
         </table>
       </div>
