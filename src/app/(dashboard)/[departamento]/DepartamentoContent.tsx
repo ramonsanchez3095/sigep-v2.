@@ -5,6 +5,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import { StatCard } from '@/components/ui/StatCard';
 import D1DepartamentoView from './D1DepartamentoView';
+import D3DepartamentoView from './D3DepartamentoView';
 import {
   TablaComparativa,
   type FilaComparativa,
@@ -37,6 +38,10 @@ import {
   hasD1StructuredTables,
   type D1RawTable,
 } from '@/lib/d1-transform';
+import {
+  hasD3StructuredTables,
+  type D3RawTable,
+} from '@/lib/d3-transform';
 
 interface TablaData {
   id: string;
@@ -196,6 +201,10 @@ export function DepartamentoContent({
     [d1AvanzadoDisponible, tablasState]
   );
 
+  const d3AvanzadoDisponible =
+    departamento.codigo === 'd3' &&
+    hasD3StructuredTables(tablasRenderizadas as unknown as D3RawTable[]);
+
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
   const shieldImg = SHIELD_MAP[departamento.codigo];
   const codigoLabel = departamento.codigo.toUpperCase().replace(/_/g, ' ');
@@ -290,10 +299,26 @@ export function DepartamentoContent({
         </div>
       ) : null}
 
+      {departamento.codigo === 'd3' && !d3AvanzadoDisponible ? (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
+          La vista avanzada de D3 está integrada en el sistema. Para verla es necesario reinicializar D3 con el seed actualizado que incluye las tablas estructuradas.
+        </div>
+      ) : null}
+
       {d1AvanzadoDisponible ? (
         <D1DepartamentoView
           departamento={departamento}
           tables={tablasState as unknown as D1RawTable[]}
+          periodoAnteriorLabel={periodoAnteriorLabel}
+          periodoActualLabel={periodoActualLabel}
+          onTablesChange={nextTables =>
+            setTablasState(nextTables as unknown as TablaData[])
+          }
+        />
+      ) : d3AvanzadoDisponible ? (
+        <D3DepartamentoView
+          departamento={departamento}
+          tables={tablasState as unknown as D3RawTable[]}
           periodoAnteriorLabel={periodoAnteriorLabel}
           periodoActualLabel={periodoActualLabel}
           onTablesChange={nextTables =>

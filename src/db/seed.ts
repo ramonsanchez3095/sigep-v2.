@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 import * as schema from './schema';
 import { createD1SeedTables } from '../lib/d1-definition';
+import { createD3SeedTables } from '../lib/d3-definition';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -247,52 +248,56 @@ const modifiedD1Seed = d1Seed.map(table =>
       }
 );
 
+const d3SeedBase = createD3SeedTables();
+const d3Seed = d3SeedBase.map(table => {
+  if (table.tablaId === 'd3-delitos-propiedad-uurr') {
+    return {
+      ...table,
+      datos: [
+        { filaId: 'urc', label: 'U.R.C', periodoAnterior: 9059, periodoActual: 8915 },
+        { filaId: 'urn', label: 'U.R.N', periodoAnterior: 2722, periodoActual: 2247 },
+        { filaId: 'urs', label: 'U.R.S', periodoAnterior: 1714, periodoActual: 955 },
+        { filaId: 'ure', label: 'U.R.E', periodoAnterior: 2271, periodoActual: 1820 },
+        { filaId: 'uro', label: 'U.R.O', periodoAnterior: 1618, periodoActual: 1458 },
+      ],
+    };
+  }
+  if (table.tablaId === 'd3-suicidios-total') {
+    return {
+      ...table,
+      datos: [
+        { filaId: 'total_provincial', label: 'TOTAL PROVINCIAL', periodoAnterior: 100, periodoActual: 117 },
+      ],
+    };
+  }
+  if (table.tablaId === 'd3-suicidios-sexo') {
+    return {
+      ...table,
+      datos: [
+        { filaId: 'masculino', label: 'MASCULINO', periodoAnterior: 71, periodoActual: 95 },
+        { filaId: 'femenino', label: 'FEMENINO', periodoAnterior: 29, periodoActual: 22 },
+      ],
+    };
+  }
+  if (table.tablaId === 'd3-suicidios-modalidades') {
+    return {
+      ...table,
+      datos: [
+        { filaId: 'ahorcamiento',   label: 'AHORCAMIENTO',   periodoAnterior: 84, periodoActual: 100 },
+        { filaId: 'arma_fuego',     label: 'ARMA DE FUEGO',  periodoAnterior: 12, periodoActual: 13 },
+        { filaId: 'arma_blanca',    label: 'ARMA BLANCA',    periodoAnterior: 1,  periodoActual: 0 },
+        { filaId: 'quemaduras',     label: 'QUEMADURAS',     periodoAnterior: 1,  periodoActual: 3 },
+        { filaId: 'envenenamiento', label: 'ENVENENAMIENTO', periodoAnterior: 0,  periodoActual: 1 },
+        { filaId: 'otros',          label: 'OTROS',          periodoAnterior: 2,  periodoActual: 0 },
+      ],
+    };
+  }
+  return table;
+});
+
 const allTablas: Record<string, TablaData[]> = {
   d1: modifiedD1Seed,
-  d3: [
-    {
-      tablaId: 'd3-delitos-propiedad',
-      nombre: 'Delitos Contra la Propiedad',
-      datos: [
-        {
-          filaId: 'hurto',
-          label: 'HURTO',
-          periodoAnterior: 3245,
-          periodoActual: 2987,
-        },
-        {
-          filaId: 'robo',
-          label: 'ROBO',
-          periodoAnterior: 1876,
-          periodoActual: 1654,
-        },
-        {
-          filaId: 'robo_agravado',
-          label: 'ROBO AGRAVADO',
-          periodoAnterior: 543,
-          periodoActual: 489,
-        },
-      ],
-    },
-    {
-      tablaId: 'd3-homicidios',
-      nombre: 'Homicidios',
-      datos: [
-        {
-          filaId: 'doloso',
-          label: 'HOMICIDIO DOLOSO',
-          periodoAnterior: 45,
-          periodoActual: 38,
-        },
-        {
-          filaId: 'culposo',
-          label: 'HOMICIDIO CULPOSO',
-          periodoAnterior: 123,
-          periodoActual: 98,
-        },
-      ],
-    },
-  ],
+  d3: d3Seed,
   d4: [
     {
       tablaId: 'd4-armamento',
