@@ -8,6 +8,7 @@ import {
   PieChartComponent,
 } from '@/components/charts/Charts';
 import { D1AdvancedTable } from '@/components/tables/D1AdvancedTable';
+import { D3HomicidiosTable } from '@/components/tables/D3HomicidiosTable';
 import { SectionHeader } from '@/components/ui/PageHeader';
 import { StatCard } from '@/components/ui/StatCard';
 import { guardarDatosComparativos } from '@/actions/datos';
@@ -56,6 +57,16 @@ const D3_TABLE_LAYOUT: Record<string, { badge: string; span?: 'full'; note?: str
     badge: 'Modalidades',
     span: 'full',
     note: 'Detalle de la modalidad empleada en cada caso de suicidio registrado.',
+  },
+  'd3-homicidios-ambito': {
+    badge: 'Homicidios',
+    span: 'full',
+    note: 'Homicidios dolosos distribuidos por el ámbito o situación física de ocurrencia.',
+  },
+  'd3-homicidios-movil': {
+    badge: 'Móvil de Crimen',
+    span: 'full',
+    note: 'Estadísticas de hechos de homicidios dolosos clasificadas por el móvil de crimen.',
   },
 };
 
@@ -223,23 +234,38 @@ export default function D3DepartamentoView({
           <div className="mx-auto flex max-w-6xl flex-col gap-8">
             {section.tables.map(table => {
               const presentation = D3_TABLE_LAYOUT[table.tableId];
+              const isHomicidiosTable =
+                table.tableId === 'd3-homicidios-ambito' ||
+                table.tableId === 'd3-homicidios-movil';
 
               return (
                 <div
                   key={table.tableId}
                   className={clsx(presentation?.span === 'full' && '2xl:col-span-2')}
                 >
-                  {/* D1AdvancedTable accepts the same shape; we cast to reuse it */}
-                  <D1AdvancedTable
-                    table={table as unknown as Parameters<typeof D1AdvancedTable>[0]['table']}
-                    rawTables={tables as unknown as D1RawTable[]}
-                    color={departamento.color}
-                    labelPeriodoAnterior={periodoAnteriorLabel}
-                    labelPeriodoActual={periodoActualLabel}
-                    badge={presentation?.badge}
-                    note={presentation?.note}
-                    onCommit={handleCommit as unknown as (sourceTableId: string, nextRows: D1RawRow[]) => Promise<void>}
-                  />
+                  {isHomicidiosTable ? (
+                    <D3HomicidiosTable
+                      table={table}
+                      rawTables={tables}
+                      color={departamento.color}
+                      labelPeriodoAnterior={periodoAnteriorLabel}
+                      labelPeriodoActual={periodoActualLabel}
+                      badge={presentation?.badge}
+                      note={presentation?.note}
+                      onCommit={handleCommit}
+                    />
+                  ) : (
+                    <D1AdvancedTable
+                      table={table as unknown as Parameters<typeof D1AdvancedTable>[0]['table']}
+                      rawTables={tables as unknown as D1RawTable[]}
+                      color={departamento.color}
+                      labelPeriodoAnterior={periodoAnteriorLabel}
+                      labelPeriodoActual={periodoActualLabel}
+                      badge={presentation?.badge}
+                      note={presentation?.note}
+                      onCommit={handleCommit as unknown as (sourceTableId: string, nextRows: D1RawRow[]) => Promise<void>}
+                    />
+                  )}
                 </div>
               );
             })}
