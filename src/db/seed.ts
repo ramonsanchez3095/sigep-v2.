@@ -5,6 +5,7 @@ import 'dotenv/config';
 import * as schema from './schema';
 import { createD1SeedTables } from '../lib/d1-definition';
 import { createD3SeedTables } from '../lib/d3-definition';
+import { createD4SeedTables } from '../lib/d4-transform';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -407,56 +408,16 @@ const d3Seed = d3SeedBase.map(table => {
 const allTablas: Record<string, TablaData[]> = {
   d1: modifiedD1Seed,
   d3: d3Seed,
-  d4: [
-    {
-      tablaId: 'd4-armamento',
-      nombre: 'Armamento Total',
-      datos: [
-        {
-          filaId: 'pistolas',
-          label: 'PISTOLAS 9MM',
-          periodoAnterior: 8500,
-          periodoActual: 9200,
-        },
-        {
-          filaId: 'escopetas',
-          label: 'ESCOPETAS',
-          periodoAnterior: 1200,
-          periodoActual: 1350,
-        },
-        {
-          filaId: 'chalecos',
-          label: 'CHALECOS ANTIBALAS',
-          periodoAnterior: 5600,
-          periodoActual: 6100,
-        },
-      ],
-    },
-    {
-      tablaId: 'd4-vehiculos',
-      nombre: 'Vehículos',
-      datos: [
-        {
-          filaId: 'patrulleros',
-          label: 'PATRULLEROS',
-          periodoAnterior: 450,
-          periodoActual: 520,
-        },
-        {
-          filaId: 'motos',
-          label: 'MOTOCICLETAS',
-          periodoAnterior: 380,
-          periodoActual: 420,
-        },
-        {
-          filaId: 'otros',
-          label: 'OTROS VEHÍCULOS',
-          periodoAnterior: 120,
-          periodoActual: 145,
-        },
-      ],
-    },
-  ],
+  d4: createD4SeedTables().map(t => ({
+    tablaId: t.tablaId,
+    nombre: t.nombre,
+    datos: t.datos.map(d => ({
+      filaId: d.filaId,
+      label: d.label,
+      periodoAnterior: d.periodoAnterior,
+      periodoActual: d.periodoActual,
+    })),
+  })),
   d2: [
     {
       tablaId: 'd2-privados-libertad',
