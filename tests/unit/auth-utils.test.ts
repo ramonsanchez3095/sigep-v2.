@@ -86,6 +86,7 @@ describe('applyTokenToSession', () => {
         color: '',
         departamentoId: null,
         permisos: [],
+        totpEnabled: false,
       },
     };
 

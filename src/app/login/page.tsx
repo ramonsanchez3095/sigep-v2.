@@ -38,7 +38,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await loginAction(username, password);
+      const result = (await loginAction(username, password)) as any;
       if (result.success) {
         router.push('/dashboard');
         router.refresh();

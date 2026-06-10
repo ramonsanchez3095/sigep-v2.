@@ -6,6 +6,7 @@ import * as schema from './schema';
 import { createD1SeedTables } from '../lib/d1-definition';
 import { createD3SeedTables } from '../lib/d3-definition';
 import { createD4SeedTables } from '../lib/d4-transform';
+import { createD5SeedTables } from '../lib/d5-transform';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -498,26 +499,16 @@ const allTablas: Record<string, TablaData[]> = {
       ],
     },
   ],
-  d5: [
-    {
-      tablaId: 'd5-detenidos-procesales',
-      nombre: 'Detenidos Procesales',
-      datos: [
-        {
-          filaId: 'total_detenidos',
-          label: 'TOTAL DETENIDOS',
-          periodoAnterior: 3456,
-          periodoActual: 3789,
-        },
-        {
-          filaId: 'con_pendientes',
-          label: 'CON PENDIENTES',
-          periodoAnterior: 567,
-          periodoActual: 623,
-        },
-      ],
-    },
-  ],
+  d5: createD5SeedTables().map(t => ({
+    tablaId: t.tablaId,
+    nombre: t.nombre,
+    datos: t.datos.map(d => ({
+      filaId: d.filaId,
+      label: d.label,
+      periodoAnterior: d.periodoAnterior,
+      periodoActual: d.periodoActual,
+    })),
+  })),
   asuntos_internos: [
     {
       tablaId: 'ai-denuncias',
@@ -717,8 +708,8 @@ const allTablas: Record<string, TablaData[]> = {
 const tablasInicialesEnCero: Record<string, TablaData[]> = Object.fromEntries(
   Object.entries(allTablas).map(([deptCodigo, tablas]) => [
     deptCodigo,
-    // Conservar los valores para D1 y D3 (tablas públicas con datos transcritos), cero para los demás
-    deptCodigo === 'd1' || deptCodigo === 'd3'
+    // Conservar los valores para D1, D3, D4 y D5 (tablas con datos transcritos reales), cero para los demás
+    deptCodigo === 'd1' || deptCodigo === 'd3' || deptCodigo === 'd4' || deptCodigo === 'd5'
       ? tablas
       : tablas.map(tabla => ({
           ...tabla,

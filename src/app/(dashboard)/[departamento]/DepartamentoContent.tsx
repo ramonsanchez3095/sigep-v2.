@@ -7,6 +7,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import D1DepartamentoView from './D1DepartamentoView';
 import D3DepartamentoView from './D3DepartamentoView';
 import D4DepartamentoView from './D4DepartamentoView';
+import D5DepartamentoView from './D5DepartamentoView';
 import {
   TablaComparativa,
   type FilaComparativa,
@@ -47,6 +48,10 @@ import {
   hasD4StructuredTables,
   type D4RawTable,
 } from '@/lib/d4-transform';
+import {
+  hasD5StructuredTables,
+  type D5RawTable,
+} from '@/lib/d5-transform';
 
 interface TablaData {
   id: string;
@@ -214,6 +219,10 @@ export function DepartamentoContent({
     departamento.codigo === 'd4' &&
     hasD4StructuredTables(tablasRenderizadas as unknown as D4RawTable[]);
 
+  const d5AvanzadoDisponible =
+    departamento.codigo === 'd5' &&
+    hasD5StructuredTables(tablasRenderizadas as unknown as D5RawTable[]);
+
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
   const shieldImg = SHIELD_MAP[departamento.codigo];
   const codigoLabel = departamento.codigo.toUpperCase().replace(/_/g, ' ');
@@ -344,6 +353,16 @@ export function DepartamentoContent({
         <D4DepartamentoView
           departamento={departamento}
           tables={tablasState as unknown as D4RawTable[]}
+          periodoAnteriorLabel={periodoAnteriorLabel}
+          periodoActualLabel={periodoActualLabel}
+          onTablesChange={nextTables =>
+            setTablasState(nextTables as unknown as TablaData[])
+          }
+        />
+      ) : d5AvanzadoDisponible ? (
+        <D5DepartamentoView
+          departamento={departamento}
+          tables={tablasState as unknown as D5RawTable[]}
           periodoAnteriorLabel={periodoAnteriorLabel}
           periodoActualLabel={periodoActualLabel}
           onTablesChange={nextTables =>

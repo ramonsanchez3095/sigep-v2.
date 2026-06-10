@@ -156,40 +156,72 @@ function Ensure-NextJunctionForOneDrive {
         New-Item -ItemType Directory -Path $cachePath -Force | Out-Null
     }
 
+    # 1) Asegurar unión .next -> cachePath
+    $needsNextLink = $true
     if (Test-Path $workspaceNextPath) {
         $nextItem = Get-Item $workspaceNextPath -Force -ErrorAction SilentlyContinue
-
         if ($null -ne $nextItem -and $nextItem.LinkType -eq "Junction") {
-            $null = cmd /c "rmdir `"$workspaceNextPath`"" 2>$null
-        }
-        else {
+            $normalizedTarget = [System.IO.Path]::GetFullPath($nextItem.Target).ToLower().TrimEnd('\')
+            $normalizedCache = [System.IO.Path]::GetFullPath($cachePath).ToLower().TrimEnd('\')
+            if ($normalizedTarget -eq $normalizedCache) {
+                $needsNextLink = $false
+                Write-Ok "El enlace de .next ya existe y es correcto."
+            } else {
+                Write-Warn "El enlace de .next apunta a otro lado. Recreando..."
+                $null = cmd /c "rmdir `"$workspaceNextPath`"" 2>$null
+            }
+        } else {
+            Write-Warn "Se detecto un directorio .next real. Eliminando para crear enlace..."
             Remove-Item $workspaceNextPath -Recurse -Force -ErrorAction SilentlyContinue
-        }
-
-        if (Test-Path $workspaceNextPath) {
-            Remove-Item $workspaceNextPath -Recurse -Force -ErrorAction SilentlyContinue
-        }
-
-        if (Test-Path $workspaceNextPath) {
-            Write-Fail "No se pudo limpiar .next antes de iniciar Next.js. Cerra procesos que esten usando la carpeta y reintenta."
         }
     }
 
-    cmd /c "mklink /J `"$workspaceNextPath`" `"$cachePath`"" *> $null
-    
-    # Resolver resolución de dependencias desde caché de la aplicación
+    if ($needsNextLink) {
+        if (Test-Path $workspaceNextPath) {
+            $null = cmd /c "rmdir /S /Q `"$workspaceNextPath`"" 2>$null
+        }
+        $linkOutput = cmd /c "mklink /J `"$workspaceNextPath`" `"$cachePath`"" 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail "Error al crear union de .next: $linkOutput"
+        } else {
+            Write-Ok "Union de .next creada exitosamente."
+        }
+    }
+
+    # 2) Asegurar unión cachePath/node_modules -> workspace/node_modules
     $cacheNodeModules = Join-Path $cachePath "node_modules"
     $workspaceNodeModules = Join-Path $PSScriptRoot "node_modules"
     
+    $needsNodeLink = $true
     if (Test-Path $cacheNodeModules) {
         $nodeModulesItem = Get-Item $cacheNodeModules -Force -ErrorAction SilentlyContinue
         if ($null -ne $nodeModulesItem -and $nodeModulesItem.LinkType -eq "Junction") {
-            $null = cmd /c "rmdir `"$cacheNodeModules`"" 2>$null
+            $normalizedTarget = [System.IO.Path]::GetFullPath($nodeModulesItem.Target).ToLower().TrimEnd('\')
+            $normalizedWorkspace = [System.IO.Path]::GetFullPath($workspaceNodeModules).ToLower().TrimEnd('\')
+            if ($normalizedTarget -eq $normalizedWorkspace) {
+                $needsNodeLink = $false
+                Write-Ok "El enlace de node_modules en cache ya existe y es correcto."
+            } else {
+                Write-Warn "El enlace de node_modules en cache apunta a otro lado. Recreando..."
+                $null = cmd /c "rmdir `"$cacheNodeModules`"" 2>$null
+            }
         } else {
+            Write-Warn "Se detecto un directorio node_modules real en cache. Eliminando para crear enlace..."
             Remove-Item $cacheNodeModules -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
-    cmd /c "mklink /J `"$cacheNodeModules`" `"$workspaceNodeModules`"" *> $null
+
+    if ($needsNodeLink) {
+        if (Test-Path $cacheNodeModules) {
+            $null = cmd /c "rmdir /S /Q `"$cacheNodeModules`"" 2>$null
+        }
+        $linkOutput = cmd /c "mklink /J `"$cacheNodeModules`" `"$workspaceNodeModules`"" 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warn "Error al crear union de node_modules: $linkOutput"
+        } else {
+            Write-Ok "Union de node_modules en cache creada exitosamente."
+        }
+    }
 
     if (-not (Test-Path $workspaceNextPath)) {
         Write-Fail "No se pudo crear el enlace local de .next fuera de OneDrive."
