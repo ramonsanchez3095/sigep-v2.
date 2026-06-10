@@ -8,7 +8,7 @@ import {
   PieChartComponent,
 } from '@/components/charts/Charts';
 import { D1AdvancedTable } from '@/components/tables/D1AdvancedTable';
-import { D3HomicidiosTable } from '@/components/tables/D3HomicidiosTable';
+import { D3HomicidiosTable, D3HomicidiosResumenTable } from '@/components/tables/D3HomicidiosTable';
 import { SectionHeader } from '@/components/ui/PageHeader';
 import { StatCard } from '@/components/ui/StatCard';
 import { guardarDatosComparativos } from '@/actions/datos';
@@ -62,6 +62,15 @@ const D3_TABLE_LAYOUT: Record<string, { badge: string; span?: 'full'; note?: str
     badge: 'Homicidios Dolosos',
     span: 'full',
     note: 'Estadísticas de hechos de homicidios dolosos clasificadas por ámbito/situación y móvil de crimen.',
+  },
+  'd3-homicidios-victimas': {
+    badge: 'Homicidios Dolosos - Víctimas',
+    span: 'full',
+    note: 'Estadísticas de cantidad de víctimas por móvil de crimen.',
+  },
+  'd3-homicidios-resumen': {
+    badge: 'Resumen',
+    span: 'full',
   },
 };
 
@@ -230,7 +239,8 @@ export default function D3DepartamentoView({
             {section.tables.map(table => {
               const presentation = D3_TABLE_LAYOUT[table.tableId];
               const isHomicidiosTable =
-                table.tableId === 'd3-homicidios-dolosos';
+                table.tableId === 'd3-homicidios-dolosos' ||
+                table.tableId === 'd3-homicidios-victimas';
 
               return (
                 <div
@@ -247,6 +257,15 @@ export default function D3DepartamentoView({
                       badge={presentation?.badge}
                       note={presentation?.note}
                       onCommit={handleCommit}
+                    />
+                  ) : table.tableId === 'd3-homicidios-resumen' ? (
+                    <D3HomicidiosResumenTable
+                      table={table}
+                      color={departamento.color}
+                      labelPeriodoAnterior={periodoAnteriorLabel}
+                      labelPeriodoActual={periodoActualLabel}
+                      badge={presentation?.badge}
+                      note={presentation?.note}
                     />
                   ) : (
                     <D1AdvancedTable

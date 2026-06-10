@@ -292,112 +292,113 @@ const d3Seed = d3SeedBase.map(table => {
       ],
     };
   }
-  if (table.tablaId === 'd3-homicidios-dolosos') {
+  if (table.tablaId === 'd3-homicidios-dolosos' || table.tablaId === 'd3-homicidios-victimas') {
+    const homicidiosDolososDatos = [
+      { filaId: 'ambito_publico_urc', label: 'ÁMBITO PÚBLICO - U.R.C', periodoAnterior: 19, periodoActual: 8 },
+      { filaId: 'ambito_publico_urn', label: 'ÁMBITO PÚBLICO - U.R.N', periodoAnterior: 3, periodoActual: 2 },
+      { filaId: 'ambito_publico_urs', label: 'ÁMBITO PÚBLICO - U.R.S', periodoAnterior: 3, periodoActual: 1 },
+      { filaId: 'ambito_publico_ure', label: 'ÁMBITO PÚBLICO - U.R.E', periodoAnterior: 1, periodoActual: 1 },
+      { filaId: 'ambito_publico_uro', label: 'ÁMBITO PÚBLICO - U.R.O', periodoAnterior: 1, periodoActual: 1 },
+
+      { filaId: 'ambito_privado_urc', label: 'ÁMBITO PRIVADO - U.R.C', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'ambito_privado_urn', label: 'ÁMBITO PRIVADO - U.R.N', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'ambito_privado_urs', label: 'ÁMBITO PRIVADO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'ambito_privado_ure', label: 'ÁMBITO PRIVADO - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'ambito_privado_uro', label: 'ÁMBITO PRIVADO - U.R.O', periodoAnterior: 1, periodoActual: 0 },
+
+      { filaId: 'vivienda_urc', label: 'VIVIENDA PARTICULAR - U.R.C', periodoAnterior: 2, periodoActual: 5 },
+      { filaId: 'vivienda_urn', label: 'VIVIENDA PARTICULAR - U.R.N', periodoAnterior: 3, periodoActual: 0 },
+      { filaId: 'vivienda_urs', label: 'VIVIENDA PARTICULAR - U.R.S', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'vivienda_ure', label: 'VIVIENDA PARTICULAR - U.R.E', periodoAnterior: 2, periodoActual: 0 },
+      { filaId: 'vivienda_uro', label: 'VIVIENDA PARTICULAR - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'encierro_urc', label: 'CONTEXTO DE ENCIERRO - U.R.C', periodoAnterior: 2, periodoActual: 0 },
+      { filaId: 'encierro_urn', label: 'CONTEXTO DE ENCIERRO - U.R.N', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'encierro_urs', label: 'CONTEXTO DE ENCIERRO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'encierro_ure', label: 'CONTEXTO DE ENCIERRO - U.R.E', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'encierro_uro', label: 'CONTEXTO DE ENCIERRO - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_interpersonal_urc', label: 'VIOLENCIA INTERPERSONAL - U.R.C', periodoAnterior: 6, periodoActual: 1 },
+      { filaId: 'movil_interpersonal_urn', label: 'VIOLENCIA INTERPERSONAL - U.R.N', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_interpersonal_urs', label: 'VIOLENCIA INTERPERSONAL - U.R.S', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_interpersonal_ure', label: 'VIOLENCIA INTERPERSONAL - U.R.E', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_interpersonal_uro', label: 'VIOLENCIA INTERPERSONAL - U.R.O', periodoAnterior: 1, periodoActual: 0 },
+
+      { filaId: 'movil_intrafamiliar_urc', label: 'VIOLENCIA INTRAFAMILIAR - U.R.C', periodoAnterior: 1, periodoActual: 2 },
+      { filaId: 'movil_intrafamiliar_urn', label: 'VIOLENCIA INTRAFAMILIAR - U.R.N', periodoAnterior: 2, periodoActual: 0 },
+      { filaId: 'movil_intrafamiliar_urs', label: 'VIOLENCIA INTRAFAMILIAR - U.R.S', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_intrafamiliar_ure', label: 'VIOLENCIA INTRAFAMILIAR - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_intrafamiliar_uro', label: 'VIOLENCIA INTRAFAMILIAR - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_defensa_urc', label: 'LEGITIMA DEFENSA - U.R.C', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_defensa_urn', label: 'LEGITIMA DEFENSA - U.R.N', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_defensa_urs', label: 'LEGITIMA DEFENSA - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_defensa_ure', label: 'LEGITIMA DEFENSA - U.R.E', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_defensa_uro', label: 'LEGITIMA DEFENSA - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_robo_urc', label: 'OCASION DE ROBO - U.R.C', periodoAnterior: 5, periodoActual: 2 },
+      { filaId: 'movil_robo_urn', label: 'OCASION DE ROBO - U.R.N', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_robo_urs', label: 'OCASION DE ROBO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_robo_ure', label: 'OCASION DE ROBO - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_robo_uro', label: 'OCASION DE ROBO - U.R.O', periodoAnterior: 1, periodoActual: 0 },
+
+      { filaId: 'movil_policial_urc', label: 'INTERVENCION POLICIAL - U.R.C', periodoAnterior: 3, periodoActual: 1 },
+      { filaId: 'movil_policial_urn', label: 'INTERVENCION POLICIAL - U.R.N', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_policial_urs', label: 'INTERVENCION POLICIAL - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_policial_ure', label: 'INTERVENCION POLICIAL - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_policial_uro', label: 'INTERVENCION POLICIAL - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_ajuste_urc', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.C', periodoAnterior: 3, periodoActual: 1 },
+      { filaId: 'movil_ajuste_urn', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.N', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'movil_ajuste_urs', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_ajuste_ure', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_ajuste_uro', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_femicidio_urc', label: 'FEMICIDIO - U.R.C', periodoAnterior: 1, periodoActual: 6 },
+      { filaId: 'movil_femicidio_urn', label: 'FEMICIDIO - U.R.N', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'movil_femicidio_urs', label: 'FEMICIDIO - U.R.S', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_femicidio_ure', label: 'FEMICIDIO - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_femicidio_uro', label: 'FEMICIDIO - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_pasional_urc', label: 'CONFLICTO PASIONAL - U.R.C', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_pasional_urn', label: 'CONFLICTO PASIONAL - U.R.N', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_pasional_urs', label: 'CONFLICTO PASIONAL - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_pasional_ure', label: 'CONFLICTO PASIONAL - U.R.E', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'movil_pasional_uro', label: 'CONFLICTO PASIONAL - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_rina_urc', label: 'RIÑA - U.R.C', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_rina_urn', label: 'RIÑA - U.R.N', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_rina_urs', label: 'RIÑA - U.R.S', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'movil_rina_ure', label: 'RIÑA - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_rina_uro', label: 'RIÑA - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_encierro_urc', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.C', periodoAnterior: 2, periodoActual: 0 },
+      { filaId: 'movil_encierro_urn', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.N', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'movil_encierro_urs', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_encierro_ure', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.E', periodoAnterior: 0, periodoActual: 1 },
+      { filaId: 'movil_encierro_uro', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_preterintencional_urc', label: 'PRETERINTENCIONAL - U.R.C', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_preterintencional_urn', label: 'PRETERINTENCIONAL - U.R.N', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_preterintencional_urs', label: 'PRETERINTENCIONAL - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_preterintencional_ure', label: 'PRETERINTENCIONAL - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_preterintencional_uro', label: 'PRETERINTENCIONAL - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_culposo_urc', label: 'CULPOSO (POR OTROS HECHOS) - U.R.C', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_culposo_urn', label: 'CULPOSO (POR OTROS HECHOS) - U.R.N', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_culposo_urs', label: 'CULPOSO (POR OTROS HECHOS) - U.R.S', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_culposo_ure', label: 'CULPOSO (POR OTROS HECHOS) - U.R.E', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_culposo_uro', label: 'CULPOSO (POR OTROS HECHOS) - U.R.O', periodoAnterior: 0, periodoActual: 0 },
+
+      { filaId: 'movil_sin_factor_urc', label: 'SIN FACTOR DE INCIDENCIA - U.R.C', periodoAnterior: 1, periodoActual: 1 },
+      { filaId: 'movil_sin_factor_urn', label: 'SIN FACTOR DE INCIDENCIA - U.R.N', periodoAnterior: 2, periodoActual: 0 },
+      { filaId: 'movil_sin_factor_urs', label: 'SIN FACTOR DE INCIDENCIA - U.R.S', periodoAnterior: 0, periodoActual: 0 },
+      { filaId: 'movil_sin_factor_ure', label: 'SIN FACTOR DE INCIDENCIA - U.R.E', periodoAnterior: 1, periodoActual: 0 },
+      { filaId: 'movil_sin_factor_uro', label: 'SIN FACTOR DE INCIDENCIA - U.R.O', periodoAnterior: 0, periodoActual: 1 },
+    ];
     return {
       ...table,
-      datos: [
-        { filaId: 'ambito_publico_urc', label: 'ÁMBITO PÚBLICO - U.R.C', periodoAnterior: 19, periodoActual: 8 },
-        { filaId: 'ambito_publico_urn', label: 'ÁMBITO PÚBLICO - U.R.N', periodoAnterior: 3, periodoActual: 2 },
-        { filaId: 'ambito_publico_urs', label: 'ÁMBITO PÚBLICO - U.R.S', periodoAnterior: 3, periodoActual: 1 },
-        { filaId: 'ambito_publico_ure', label: 'ÁMBITO PÚBLICO - U.R.E', periodoAnterior: 1, periodoActual: 1 },
-        { filaId: 'ambito_publico_uro', label: 'ÁMBITO PÚBLICO - U.R.O', periodoAnterior: 1, periodoActual: 1 },
-
-        { filaId: 'ambito_privado_urc', label: 'ÁMBITO PRIVADO - U.R.C', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'ambito_privado_urn', label: 'ÁMBITO PRIVADO - U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'ambito_privado_urs', label: 'ÁMBITO PRIVADO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ambito_privado_ure', label: 'ÁMBITO PRIVADO - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'ambito_privado_uro', label: 'ÁMBITO PRIVADO - U.R.O', periodoAnterior: 1, periodoActual: 0 },
-
-        { filaId: 'vivienda_urc', label: 'VIVIENDA PARTICULAR - U.R.C', periodoAnterior: 2, periodoActual: 5 },
-        { filaId: 'vivienda_urn', label: 'VIVIENDA PARTICULAR - U.R.N', periodoAnterior: 3, periodoActual: 0 },
-        { filaId: 'vivienda_urs', label: 'VIVIENDA PARTICULAR - U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'vivienda_ure', label: 'VIVIENDA PARTICULAR - U.R.E', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'vivienda_uro', label: 'VIVIENDA PARTICULAR - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'encierro_urc', label: 'CONTEXTO DE ENCIERRO - U.R.C', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'encierro_urn', label: 'CONTEXTO DE ENCIERRO - U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'encierro_urs', label: 'CONTEXTO DE ENCIERRO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'encierro_ure', label: 'CONTEXTO DE ENCIERRO - U.R.E', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'encierro_uro', label: 'CONTEXTO DE ENCIERRO - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_interpersonal_urc', label: 'VIOLENCIA INTERPERSONAL - U.R.C', periodoAnterior: 6, periodoActual: 1 },
-        { filaId: 'movil_interpersonal_urn', label: 'VIOLENCIA INTERPERSONAL - U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_interpersonal_urs', label: 'VIOLENCIA INTERPERSONAL - U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_interpersonal_ure', label: 'VIOLENCIA INTERPERSONAL - U.R.E', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_interpersonal_uro', label: 'VIOLENCIA INTERPERSONAL - U.R.O', periodoAnterior: 1, periodoActual: 0 },
-
-        { filaId: 'movil_intrafamiliar_urc', label: 'VIOLENCIA INTRAFAMILIAR - U.R.C', periodoAnterior: 1, periodoActual: 2 },
-        { filaId: 'movil_intrafamiliar_urn', label: 'VIOLENCIA INTRAFAMILIAR - U.R.N', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'movil_intrafamiliar_urs', label: 'VIOLENCIA INTRAFAMILIAR - U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_intrafamiliar_ure', label: 'VIOLENCIA INTRAFAMILIAR - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_intrafamiliar_uro', label: 'VIOLENCIA INTRAFAMILIAR - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_defensa_urc', label: 'LEGITIMA DEFENSA - U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_defensa_urn', label: 'LEGITIMA DEFENSA - U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_defensa_urs', label: 'LEGITIMA DEFENSA - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_defensa_ure', label: 'LEGITIMA DEFENSA - U.R.E', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_defensa_uro', label: 'LEGITIMA DEFENSA - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_robo_urc', label: 'OCASION DE ROBO - U.R.C', periodoAnterior: 5, periodoActual: 2 },
-        { filaId: 'movil_robo_urn', label: 'OCASION DE ROBO - U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_robo_urs', label: 'OCASION DE ROBO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_robo_ure', label: 'OCASION DE ROBO - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_robo_uro', label: 'OCASION DE ROBO - U.R.O', periodoAnterior: 1, periodoActual: 0 },
-
-        { filaId: 'movil_policial_urc', label: 'INTERVENCION POLICIAL - U.R.C', periodoAnterior: 3, periodoActual: 1 },
-        { filaId: 'movil_policial_urn', label: 'INTERVENCION POLICIAL - U.R.N', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_policial_urs', label: 'INTERVENCION POLICIAL - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_policial_ure', label: 'INTERVENCION POLICIAL - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_policial_uro', label: 'INTERVENCION POLICIAL - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_ajuste_urc', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.C', periodoAnterior: 3, periodoActual: 1 },
-        { filaId: 'movil_ajuste_urn', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'movil_ajuste_urs', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_ajuste_ure', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_ajuste_uro', label: 'POSIBLE AJUSTE DE CUENTAS - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_femicidio_urc', label: 'FEMICIDIO - U.R.C', periodoAnterior: 1, periodoActual: 6 },
-        { filaId: 'movil_femicidio_urn', label: 'FEMICIDIO - U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'movil_femicidio_urs', label: 'FEMICIDIO - U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_femicidio_ure', label: 'FEMICIDIO - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_femicidio_uro', label: 'FEMICIDIO - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_pasional_urc', label: 'CONFLICTO PASIONAL - U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_pasional_urn', label: 'CONFLICTO PASIONAL - U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_pasional_urs', label: 'CONFLICTO PASIONAL - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_pasional_ure', label: 'CONFLICTO PASIONAL - U.R.E', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'movil_pasional_uro', label: 'CONFLICTO PASIONAL - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_rina_urc', label: 'RIÑA - U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_rina_urn', label: 'RIÑA - U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_rina_urs', label: 'RIÑA - U.R.S', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'movil_rina_ure', label: 'RIÑA - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_rina_uro', label: 'RIÑA - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_encierro_urc', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.C', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'movil_encierro_urn', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.N', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'movil_encierro_urs', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_encierro_ure', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.E', periodoAnterior: 0, periodoActual: 1 },
-        { filaId: 'movil_encierro_uro', label: 'CONFLICTO EN CONTEXTO DE ENCIERRO - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_preterintencional_urc', label: 'PRETERINTENCIONAL - U.R.C', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_preterintencional_urn', label: 'PRETERINTENCIONAL - U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_preterintencional_urs', label: 'PRETERINTENCIONAL - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_preterintencional_ure', label: 'PRETERINTENCIONAL - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_preterintencional_uro', label: 'PRETERINTENCIONAL - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_culposo_urc', label: 'CULPOSO (POR OTROS HECHOS) - U.R.C', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_culposo_urn', label: 'CULPOSO (POR OTROS HECHOS) - U.R.N', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_culposo_urs', label: 'CULPOSO (POR OTROS HECHOS) - U.R.S', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_culposo_ure', label: 'CULPOSO (POR OTROS HECHOS) - U.R.E', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_culposo_uro', label: 'CULPOSO (POR OTROS HECHOS) - U.R.O', periodoAnterior: 0, periodoActual: 0 },
-
-        { filaId: 'movil_sin_factor_urc', label: 'SIN FACTOR DE INCIDENCIA - U.R.C', periodoAnterior: 1, periodoActual: 1 },
-        { filaId: 'movil_sin_factor_urn', label: 'SIN FACTOR DE INCIDENCIA - U.R.N', periodoAnterior: 2, periodoActual: 0 },
-        { filaId: 'movil_sin_factor_urs', label: 'SIN FACTOR DE INCIDENCIA - U.R.S', periodoAnterior: 0, periodoActual: 0 },
-        { filaId: 'movil_sin_factor_ure', label: 'SIN FACTOR DE INCIDENCIA - U.R.E', periodoAnterior: 1, periodoActual: 0 },
-        { filaId: 'movil_sin_factor_uro', label: 'SIN FACTOR DE INCIDENCIA - U.R.O', periodoAnterior: 0, periodoActual: 1 },
-      ],
+      datos: homicidiosDolososDatos,
     };
   }
   return table;

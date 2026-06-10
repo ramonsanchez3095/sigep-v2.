@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition, Fragment } from 'react';
 import clsx from 'clsx';
 import { Edit2, Save, X } from 'lucide-react';
 import { useAppStore } from '@/store';
@@ -184,7 +184,7 @@ export function D3HomicidiosTable({
       : 'border-b border-slate-100 hover:bg-slate-50/50';
 
     return (
-      <optgroup key={cat.categoryKey}>
+      <Fragment key={cat.categoryKey}>
         {/* Fila Período Anterior (2024) */}
         <tr className={clsx(trBgClass)}>
           {/* Celda de la Categoría con RowSpan 2 */}
@@ -265,7 +265,7 @@ export function D3HomicidiosTable({
             {sumActual}
           </td>
         </tr>
-      </optgroup>
+      </Fragment>
     );
   };
 
@@ -355,8 +355,10 @@ export function D3HomicidiosTable({
               <th className="border-b border-r border-[#e8dcc0] px-3 py-3 text-center font-semibold uppercase tracking-[0.08em] w-24">
                 URO
               </th>
-              <th className="border-b border-[#e8dcc0] px-4 py-3 text-center font-semibold uppercase tracking-[0.08em]">
-                Cantidad de Hechos
+              <th className="border-b-[#e8dcc0] px-4 py-3 text-center font-semibold uppercase tracking-[0.08em]">
+                {activeTable.tableId === 'd3-homicidios-victimas'
+                  ? 'Cantidad de Víctimas por Móvil de Crimen'
+                  : 'Cantidad de Hechos'}
               </th>
             </tr>
           </thead>
@@ -388,6 +390,122 @@ export function D3HomicidiosTable({
           {error}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+export interface D3HomicidiosResumenTableProps {
+  table: D3RenderedTable;
+  color: string;
+  labelPeriodoAnterior: string;
+  labelPeriodoActual: string;
+  badge?: string;
+  note?: string;
+}
+
+export function D3HomicidiosResumenTable({
+  table,
+  color,
+  labelPeriodoAnterior,
+  labelPeriodoActual,
+  badge,
+  note,
+}: D3HomicidiosResumenTableProps) {
+  const row = table.rows[0];
+  if (!row) return null;
+
+  const parseYear = (label: string) => {
+    const match = label.match(/\d{4}/);
+    return match ? match[0] : label;
+  };
+
+  const añoAnterior = parseYear(labelPeriodoAnterior);
+  const añoActual = parseYear(labelPeriodoActual);
+
+  const valAnterior = row.periodoAnterior;
+  const valActual = row.periodoActual;
+  const variacion = row.variacion;
+
+  // Determinar colores según la lógica de homicidios (menos es mejor/verde, más es peor/rojo)
+  let colorAnterior = 'text-rose-600'; // Rojo (anterior era mayor/peor)
+  let colorActual = 'text-emerald-600'; // Verde (actual es menor/mejor)
+  let colorVariacion = 'text-emerald-600'; // Verde (disminución)
+
+  if (valActual > valAnterior) {
+    colorAnterior = 'text-emerald-600'; // Verde (anterior era menor)
+    colorActual = 'text-rose-600'; // Rojo (actual es mayor/peor)
+    colorVariacion = 'text-rose-600'; // Rojo (aumento)
+  } else if (valActual === valAnterior) {
+    colorAnterior = 'text-slate-700';
+    colorActual = 'text-slate-700';
+    colorVariacion = 'text-slate-600';
+  }
+
+  return (
+    <div className="card overflow-hidden rounded-[26px] border border-slate-200/80 shadow-[0_16px_38px_rgba(15,29,48,0.08)] bg-white">
+      {/* Cabecera de la tabla */}
+      <div
+        className="flex flex-col gap-4 px-5 py-5 text-white"
+        style={{
+          background: `linear-gradient(135deg, ${color} 0%, ${color}dd 58%, #0f1d30 100%)`,
+        }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            {badge ? (
+              <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/85 backdrop-blur-sm">
+                {badge}
+              </span>
+            ) : null}
+            <h3 className="mt-3 text-base font-semibold uppercase tracking-[0.08em]">
+              {table.title}
+            </h3>
+            {table.description ? (
+              <p className="mt-1 text-sm text-white/80">{table.description}</p>
+            ) : null}
+            {note ? <p className="mt-2 text-sm text-white/75">{note}</p> : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabla de Datos */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse text-sm text-slate-700">
+          <thead>
+            <tr className="bg-[#f8f1df] text-slate-700">
+              <th className="border-b border-r border-[#e8dcc0] px-4 py-3 text-left font-semibold uppercase tracking-[0.08em] w-[45%]">
+                Año
+              </th>
+              <th className="border-b border-r border-[#e8dcc0] px-3 py-3 text-center font-semibold uppercase tracking-[0.08em] w-28">
+                {añoAnterior}
+              </th>
+              <th className="border-b border-r border-[#e8dcc0] px-3 py-3 text-center font-semibold uppercase tracking-[0.08em] w-28">
+                {añoActual}
+              </th>
+              <th className="border-b border-[#e8dcc0] px-4 py-3 text-center font-semibold uppercase tracking-[0.08em]">
+                Dif %
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-slate-100 hover:bg-slate-50/50">
+              <td className="px-4 py-3 font-semibold uppercase border-r border-slate-200/60 text-slate-900 bg-slate-50/30">
+                {row.label}
+              </td>
+              <td className={`px-3 py-2.5 text-center font-bold border-r border-slate-200/60 ${colorAnterior} tabular-nums text-base`}>
+                {valAnterior}
+              </td>
+              <td className={`px-3 py-2.5 text-center font-bold border-r border-slate-200/60 ${colorActual} tabular-nums text-base`}>
+                {valActual}
+              </td>
+              <td className={`px-4 py-2.5 text-center font-bold ${colorVariacion} tabular-nums text-base`}>
+                {variacion > 0 ? '+' : ''}
+                {variacion.toFixed(1)}%
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
