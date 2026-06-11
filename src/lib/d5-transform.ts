@@ -21,6 +21,19 @@ import {
   D5_CONTRAVENCIONALES_CONCEPTS,
   D5_LIBERADOS_CONCEPTS,
   D5_LLAMADAS_CONCEPTS,
+  // Nuevos defaults y conceptos
+  D5_DENUNCIAS_TIPOS_DEFAULT,
+  D5_DENUNCIAS_SUPERIOR_DEFAULT,
+  D5_DENUNCIAS_SUBOFICIAL_DEFAULT,
+  D5_DENUNCIAS_RESUMEN_DEFAULT,
+  D5_ACTUACIONES_REDES_DEFAULT,
+  D5_ACTUACIONES_ARMAS_DEFAULT,
+  D5_DENUNCIAS_TIPOS_CONCEPTS,
+  D5_DENUNCIAS_SUPERIOR_CONCEPTS,
+  D5_DENUNCIAS_SUBOFICIAL_CONCEPTS,
+  D5_DENUNCIAS_RESUMEN_CONCEPTS,
+  D5_ACTUACIONES_REDES_CONCEPTS,
+  D5_ACTUACIONES_ARMAS_CONCEPTS,
   type D5ComparisonRow,
   type D5DetenidosPendientesRow,
   type D5DetenidosContravencionalesRow,
@@ -57,6 +70,13 @@ export interface D5DashboardData {
   personalPolicialDetenido: D5ComparisonRow[];
   detenidosLiberados: D5MonthlyInputRow[];
   llamadasAntecedentes: D5MonthlyInputRow[];
+  // Nuevas tablas
+  denunciasTipos: D5MonthlyInputRow[];
+  denunciasSuperior: D5MonthlyInputRow[];
+  denunciasSuboficial: D5MonthlyInputRow[];
+  denunciasResumen: D5MonthlyInputRow[];
+  actuacionesRedes: D5MonthlyInputRow[];
+  actuacionesArmas: D5MonthlyInputRow[];
   rawTableIds: Record<string, string | undefined>; // tablaId → table db id
 }
 
@@ -231,6 +251,126 @@ export function buildD5Dashboard(rawTables: D5RawTable[]): D5DashboardData {
     }
   }
 
+  // 11. Tipos de Denuncias realizadas a Personal Policial
+  const denunciasTiposTable = findTable(rawTables, D5_TABLE_IDS.DENUNCIAS_TIPOS);
+  rawTableIds[D5_TABLE_IDS.DENUNCIAS_TIPOS] = denunciasTiposTable?.id;
+  const denunciasTipos: D5MonthlyInputRow[] = [];
+  for (const concept of D5_DENUNCIAS_TIPOS_CONCEPTS) {
+    for (const anio of [2024, 2025] as const) {
+      for (const mes of D5_MESES) {
+        const prefix = `${concept.id}_${mes.toLowerCase()}_${anio}`;
+        const valor = denunciasTiposTable?.datos.find((r) => r.id === prefix)?.periodoActual ?? 0;
+        denunciasTipos.push({
+          concept: concept.id,
+          label: concept.label,
+          mes,
+          anio,
+          valor,
+        });
+      }
+    }
+  }
+
+  // 12. Personal Policial Superior Denunciado
+  const denunciasSuperiorTable = findTable(rawTables, D5_TABLE_IDS.DENUNCIAS_SUPERIOR);
+  rawTableIds[D5_TABLE_IDS.DENUNCIAS_SUPERIOR] = denunciasSuperiorTable?.id;
+  const denunciasSuperior: D5MonthlyInputRow[] = [];
+  for (const concept of D5_DENUNCIAS_SUPERIOR_CONCEPTS) {
+    for (const anio of [2024, 2025] as const) {
+      for (const mes of D5_MESES) {
+        const prefix = `${concept.id}_${mes.toLowerCase()}_${anio}`;
+        const valor = denunciasSuperiorTable?.datos.find((r) => r.id === prefix)?.periodoActual ?? 0;
+        denunciasSuperior.push({
+          concept: concept.id,
+          label: concept.label,
+          mes,
+          anio,
+          valor,
+        });
+      }
+    }
+  }
+
+  // 13. Personal Policial Suboficial Denunciado
+  const denunciasSuboficialTable = findTable(rawTables, D5_TABLE_IDS.DENUNCIAS_SUBOFICIAL);
+  rawTableIds[D5_TABLE_IDS.DENUNCIAS_SUBOFICIAL] = denunciasSuboficialTable?.id;
+  const denunciasSuboficial: D5MonthlyInputRow[] = [];
+  for (const concept of D5_DENUNCIAS_SUBOFICIAL_CONCEPTS) {
+    for (const anio of [2024, 2025] as const) {
+      for (const mes of D5_MESES) {
+        const prefix = `${concept.id}_${mes.toLowerCase()}_${anio}`;
+        const valor = denunciasSuboficialTable?.datos.find((r) => r.id === prefix)?.periodoActual ?? 0;
+        denunciasSuboficial.push({
+          concept: concept.id,
+          label: concept.label,
+          mes,
+          anio,
+          valor,
+        });
+      }
+    }
+  }
+
+  // 14. Personal Policial Denunciado (Resumen)
+  const denunciasResumenTable = findTable(rawTables, D5_TABLE_IDS.DENUNCIAS_RESUMEN);
+  rawTableIds[D5_TABLE_IDS.DENUNCIAS_RESUMEN] = denunciasResumenTable?.id;
+  const denunciasResumen: D5MonthlyInputRow[] = [];
+  for (const concept of D5_DENUNCIAS_RESUMEN_CONCEPTS) {
+    for (const anio of [2024, 2025] as const) {
+      for (const mes of D5_MESES) {
+        const prefix = `${concept.id}_${mes.toLowerCase()}_${anio}`;
+        const valor = denunciasResumenTable?.datos.find((r) => r.id === prefix)?.periodoActual ?? 0;
+        denunciasResumen.push({
+          concept: concept.id,
+          label: concept.label,
+          mes,
+          anio,
+          valor,
+        });
+      }
+    }
+  }
+
+  // 15. Actuaciones Redes
+  const actuacionesRedesTable = findTable(rawTables, D5_TABLE_IDS.ACTUACIONES_REDES);
+  rawTableIds[D5_TABLE_IDS.ACTUACIONES_REDES] = actuacionesRedesTable?.id;
+  const actuacionesRedes: D5MonthlyInputRow[] = [];
+  for (const concept of D5_ACTUACIONES_REDES_CONCEPTS) {
+    for (const anio of [2024, 2025] as const) {
+      for (const mes of D5_MESES) {
+        const prefix = `${concept.id}_${mes.toLowerCase()}_${anio}`;
+        const valor = actuacionesRedesTable?.datos.find((r) => r.id === prefix)?.periodoActual ?? 0;
+        actuacionesRedes.push({
+          concept: concept.id,
+          label: concept.label,
+          mes,
+          anio,
+          valor,
+        });
+      }
+    }
+  }
+
+  // 16. Actuaciones Armas
+  const actuacionesArmasTable = findTable(rawTables, D5_TABLE_IDS.ACTUACIONES_ARMAS);
+  rawTableIds[D5_TABLE_IDS.ACTUACIONES_ARMAS] = actuacionesArmasTable?.id;
+  const actuacionesArmas: D5MonthlyInputRow[] = [];
+  for (const concept of D5_ACTUACIONES_ARMAS_CONCEPTS) {
+    for (const anio of [2024, 2025] as const) {
+      for (const mes of D5_MESES) {
+        const prefix = `${concept.id}_${mes.toLowerCase()}_${anio}`;
+        const valor = actuacionesArmasTable?.datos.find((r) => r.id === prefix)?.periodoActual ?? 0;
+        actuacionesArmas.push({
+          concept: concept.id,
+          label: concept.label,
+          mes,
+          anio,
+          valor,
+        });
+      }
+    }
+  }
+
   return {
     isReady: hasD5StructuredTables(rawTables),
     detenidosProcesales,
@@ -243,6 +383,13 @@ export function buildD5Dashboard(rawTables: D5RawTable[]): D5DashboardData {
     personalPolicialDetenido,
     detenidosLiberados,
     llamadasAntecedentes,
+    // Nuevas tablas
+    denunciasTipos,
+    denunciasSuperior,
+    denunciasSuboficial,
+    denunciasResumen,
+    actuacionesRedes,
+    actuacionesArmas,
     rawTableIds,
   };
 }
@@ -415,6 +562,108 @@ export function createD5SeedTables() {
     tablaId: D5_TABLE_IDS.LLAMADAS_ANTECEDENTES,
     nombre: 'Estadísticas de Llamadas Telefónicas sobre Antecedentes - Período 2025',
     datos: llamadasDatos,
+  });
+
+  // 11. Tipos de Denuncias realizadas a Personal Policial
+  const denunciasTiposDatos: Array<{ filaId: string; label: string; periodoAnterior: number; periodoActual: number }> = [];
+  for (const r of D5_DENUNCIAS_TIPOS_DEFAULT) {
+    const prefix = `${r.concept}_${r.mes.toLowerCase()}_${r.anio}`;
+    denunciasTiposDatos.push({
+      filaId: prefix,
+      label: `${r.label} - ${r.mes} ${r.anio}`,
+      periodoAnterior: 0,
+      periodoActual: r.valor,
+    });
+  }
+  tables.push({
+    tablaId: D5_TABLE_IDS.DENUNCIAS_TIPOS,
+    nombre: 'Tipos de Denuncias realizadas a Personal Policial',
+    datos: denunciasTiposDatos,
+  });
+
+  // 12. Personal Policial Superior Denunciado
+  const denunciasSuperiorDatos: Array<{ filaId: string; label: string; periodoAnterior: number; periodoActual: number }> = [];
+  for (const r of D5_DENUNCIAS_SUPERIOR_DEFAULT) {
+    const prefix = `${r.concept}_${r.mes.toLowerCase()}_${r.anio}`;
+    denunciasSuperiorDatos.push({
+      filaId: prefix,
+      label: `${r.label} - ${r.mes} ${r.anio}`,
+      periodoAnterior: 0,
+      periodoActual: r.valor,
+    });
+  }
+  tables.push({
+    tablaId: D5_TABLE_IDS.DENUNCIAS_SUPERIOR,
+    nombre: 'Personal Policial Superior Denunciado',
+    datos: denunciasSuperiorDatos,
+  });
+
+  // 13. Personal Policial Suboficial Denunciado
+  const denunciasSuboficialDatos: Array<{ filaId: string; label: string; periodoAnterior: number; periodoActual: number }> = [];
+  for (const r of D5_DENUNCIAS_SUBOFICIAL_DEFAULT) {
+    const prefix = `${r.concept}_${r.mes.toLowerCase()}_${r.anio}`;
+    denunciasSuboficialDatos.push({
+      filaId: prefix,
+      label: `${r.label} - ${r.mes} ${r.anio}`,
+      periodoAnterior: 0,
+      periodoActual: r.valor,
+    });
+  }
+  tables.push({
+    tablaId: D5_TABLE_IDS.DENUNCIAS_SUBOFICIAL,
+    nombre: 'Personal Policial Suboficial Denunciado',
+    datos: denunciasSuboficialDatos,
+  });
+
+  // 14. Personal Policial Denunciado (Resumen)
+  const denunciasResumenDatos: Array<{ filaId: string; label: string; periodoAnterior: number; periodoActual: number }> = [];
+  for (const r of D5_DENUNCIAS_RESUMEN_DEFAULT) {
+    const prefix = `${r.concept}_${r.mes.toLowerCase()}_${r.anio}`;
+    denunciasResumenDatos.push({
+      filaId: prefix,
+      label: `${r.label} - ${r.mes} ${r.anio}`,
+      periodoAnterior: 0,
+      periodoActual: r.valor,
+    });
+  }
+  tables.push({
+    tablaId: D5_TABLE_IDS.DENUNCIAS_RESUMEN,
+    nombre: 'Personal Policial Denunciado',
+    datos: denunciasResumenDatos,
+  });
+
+  // 15. Actuaciones Redes
+  const actuacionesRedesDatos: Array<{ filaId: string; label: string; periodoAnterior: number; periodoActual: number }> = [];
+  for (const r of D5_ACTUACIONES_REDES_DEFAULT) {
+    const prefix = `${r.concept}_${r.mes.toLowerCase()}_${r.anio}`;
+    actuacionesRedesDatos.push({
+      filaId: prefix,
+      label: `${r.label} - ${r.mes} ${r.anio}`,
+      periodoAnterior: 0,
+      periodoActual: r.valor,
+    });
+  }
+  tables.push({
+    tablaId: D5_TABLE_IDS.ACTUACIONES_REDES,
+    nombre: 'Actuaciones Administrativas Iniciadas por Publicaciones en Redes Sociales',
+    datos: actuacionesRedesDatos,
+  });
+
+  // 16. Actuaciones Armas
+  const actuacionesArmasDatos: Array<{ filaId: string; label: string; periodoAnterior: number; periodoActual: number }> = [];
+  for (const r of D5_ACTUACIONES_ARMAS_DEFAULT) {
+    const prefix = `${r.concept}_${r.mes.toLowerCase()}_${r.anio}`;
+    actuacionesArmasDatos.push({
+      filaId: prefix,
+      label: `${r.label} - ${r.mes} ${r.anio}`,
+      periodoAnterior: 0,
+      periodoActual: r.valor,
+    });
+  }
+  tables.push({
+    tablaId: D5_TABLE_IDS.ACTUACIONES_ARMAS,
+    nombre: 'Actuaciones Administrativas Derivadas de Robo y/o Hurto de Armas Reglamentarias',
+    datos: actuacionesArmasDatos,
   });
 
   return tables;
