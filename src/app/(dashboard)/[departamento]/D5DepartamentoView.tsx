@@ -16,13 +16,6 @@ import {
   D5_CONTRAVENCIONALES_CONCEPTS,
   D5_LIBERADOS_CONCEPTS,
   D5_LLAMADAS_CONCEPTS,
-  // Nuevos conceptos
-  D5_DENUNCIAS_TIPOS_CONCEPTS,
-  D5_DENUNCIAS_SUPERIOR_CONCEPTS,
-  D5_DENUNCIAS_SUBOFICIAL_CONCEPTS,
-  D5_DENUNCIAS_RESUMEN_CONCEPTS,
-  D5_ACTUACIONES_REDES_CONCEPTS,
-  D5_ACTUACIONES_ARMAS_CONCEPTS,
   type D5ComparisonRow,
 } from '@/lib/d5-definition';
 import {
@@ -344,90 +337,6 @@ export default function D5DepartamentoView({
               await handleCommit(D5_TABLE_IDS.LLAMADAS_ANTECEDENTES, monthlyToRawRows(rows));
             }}
             charColumnName="Estadísticas de Llamadas"
-          />
-        </div>
-      </section>
-
-      {/* ── Sección: Control y Actuaciones de Personal Policial ─────────────────── */}
-      <section className="space-y-4">
-        <SectionHeader titulo="Control y Actuaciones de Personal Policial" color={color} />
-        <div className="space-y-6">
-          <D5MonthlyGroupedTable
-            title="Tipos de Denuncias realizadas a Personal Policial"
-            badge="Tipos de Denuncia"
-            color={color}
-            concepts={Array.from(D5_DENUNCIAS_TIPOS_CONCEPTS)}
-            rows={dashboard.denunciasTipos as D5MonthlyInputRow[]}
-            canSave={hasTable(D5_TABLE_IDS.DENUNCIAS_TIPOS)}
-            onSave={async (rows) => {
-              await handleCommit(D5_TABLE_IDS.DENUNCIAS_TIPOS, monthlyToRawRows(rows));
-            }}
-            charColumnName="Tipos de Denuncias"
-          />
-
-          <D5MonthlyGroupedTable
-            title="Personal Policial Superior Denunciado"
-            badge="Personal Superior"
-            color={color}
-            concepts={Array.from(D5_DENUNCIAS_SUPERIOR_CONCEPTS)}
-            rows={dashboard.denunciasSuperior as D5MonthlyInputRow[]}
-            canSave={hasTable(D5_TABLE_IDS.DENUNCIAS_SUPERIOR)}
-            onSave={async (rows) => {
-              await handleCommit(D5_TABLE_IDS.DENUNCIAS_SUPERIOR, monthlyToRawRows(rows));
-            }}
-            charColumnName="Jerarquía de Personal Superior"
-          />
-
-          <D5MonthlyGroupedTable
-            title="Personal Policial Suboficial Denunciado"
-            badge="Personal Suboficial"
-            color={color}
-            concepts={Array.from(D5_DENUNCIAS_SUBOFICIAL_CONCEPTS)}
-            rows={dashboard.denunciasSuboficial as D5MonthlyInputRow[]}
-            canSave={hasTable(D5_TABLE_IDS.DENUNCIAS_SUBOFICIAL)}
-            onSave={async (rows) => {
-              await handleCommit(D5_TABLE_IDS.DENUNCIAS_SUBOFICIAL, monthlyToRawRows(rows));
-            }}
-            charColumnName="Jerarquía de Personal Suboficiales"
-          />
-
-          <D5MonthlyGroupedTable
-            title="Personal Policial Denunciado (Resumen)"
-            badge="Resumen Denuncias"
-            color={color}
-            concepts={Array.from(D5_DENUNCIAS_RESUMEN_CONCEPTS)}
-            rows={dashboard.denunciasResumen as D5MonthlyInputRow[]}
-            canSave={hasTable(D5_TABLE_IDS.DENUNCIAS_RESUMEN)}
-            onSave={async (rows) => {
-              await handleCommit(D5_TABLE_IDS.DENUNCIAS_RESUMEN, monthlyToRawRows(rows));
-            }}
-            charColumnName="Total"
-          />
-
-          <D5MonthlyGroupedTable
-            title="Actuaciones Administrativas Iniciadas por Publicaciones en Redes Sociales"
-            badge="Redes Sociales"
-            color={color}
-            concepts={Array.from(D5_ACTUACIONES_REDES_CONCEPTS)}
-            rows={dashboard.actuacionesRedes as D5MonthlyInputRow[]}
-            canSave={hasTable(D5_TABLE_IDS.ACTUACIONES_REDES)}
-            onSave={async (rows) => {
-              await handleCommit(D5_TABLE_IDS.ACTUACIONES_REDES, monthlyToRawRows(rows));
-            }}
-            charColumnName="Derivaciones Redes Sociales"
-          />
-
-          <D5MonthlyGroupedTable
-            title="Actuaciones Administrativas Derivadas de Robo y/o Hurto de Armas Reglamentarias"
-            badge="Armas Reglamentarias"
-            color={color}
-            concepts={Array.from(D5_ACTUACIONES_ARMAS_CONCEPTS)}
-            rows={dashboard.actuacionesArmas as D5MonthlyInputRow[]}
-            canSave={hasTable(D5_TABLE_IDS.ACTUACIONES_ARMAS)}
-            onSave={async (rows) => {
-              await handleCommit(D5_TABLE_IDS.ACTUACIONES_ARMAS, monthlyToRawRows(rows));
-            }}
-            charColumnName="Causa Administrativa"
           />
         </div>
       </section>

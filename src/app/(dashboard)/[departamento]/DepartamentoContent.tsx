@@ -52,6 +52,11 @@ import {
   hasD5StructuredTables,
   type D5RawTable,
 } from '@/lib/d5-transform';
+import AsuntosInternosDepartamentoView from './AsuntosInternosDepartamentoView';
+import {
+  hasAsuntosInternosStructuredTables,
+  type AIRawTable,
+} from '@/lib/asuntos-internos-transform';
 
 interface TablaData {
   id: string;
@@ -222,6 +227,10 @@ export function DepartamentoContent({
   const d5AvanzadoDisponible =
     departamento.codigo === 'd5' &&
     hasD5StructuredTables(tablasRenderizadas as unknown as D5RawTable[]);
+ 
+  const asuntosInternosAvanzadoDisponible =
+    departamento.codigo === 'asuntos_internos' &&
+    hasAsuntosInternosStructuredTables(tablasRenderizadas as unknown as AIRawTable[]);
 
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
   const shieldImg = SHIELD_MAP[departamento.codigo];
@@ -363,6 +372,16 @@ export function DepartamentoContent({
         <D5DepartamentoView
           departamento={departamento}
           tables={tablasState as unknown as D5RawTable[]}
+          periodoAnteriorLabel={periodoAnteriorLabel}
+          periodoActualLabel={periodoActualLabel}
+          onTablesChange={nextTables =>
+            setTablasState(nextTables as unknown as TablaData[])
+          }
+        />
+      ) : asuntosInternosAvanzadoDisponible ? (
+        <AsuntosInternosDepartamentoView
+          departamento={departamento}
+          tables={tablasState as unknown as AIRawTable[]}
           periodoAnteriorLabel={periodoAnteriorLabel}
           periodoActualLabel={periodoActualLabel}
           onTablesChange={nextTables =>

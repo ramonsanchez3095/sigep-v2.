@@ -7,6 +7,7 @@ import { createD1SeedTables } from '../lib/d1-definition';
 import { createD3SeedTables } from '../lib/d3-definition';
 import { createD4SeedTables } from '../lib/d4-transform';
 import { createD5SeedTables } from '../lib/d5-transform';
+import { createAsuntosInternosSeedTables } from '../lib/asuntos-internos-transform';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -509,32 +510,16 @@ const allTablas: Record<string, TablaData[]> = {
       periodoActual: d.periodoActual,
     })),
   })),
-  asuntos_internos: [
-    {
-      tablaId: 'ai-denuncias',
-      nombre: 'Denuncias Recibidas',
-      datos: [
-        {
-          filaId: 'abuso_autoridad',
-          label: 'ABUSO DE AUTORIDAD',
-          periodoAnterior: 45,
-          periodoActual: 38,
-        },
-        {
-          filaId: 'negligencia',
-          label: 'NEGLIGENCIA',
-          periodoAnterior: 67,
-          periodoActual: 54,
-        },
-        {
-          filaId: 'abandono',
-          label: 'ABANDONO DE SERVICIO',
-          periodoAnterior: 23,
-          periodoActual: 19,
-        },
-      ],
-    },
-  ],
+  asuntos_internos: createAsuntosInternosSeedTables().map(t => ({
+    tablaId: t.tablaId,
+    nombre: t.nombre,
+    datos: t.datos.map(d => ({
+      filaId: d.filaId,
+      label: d.label,
+      periodoAnterior: d.periodoAnterior,
+      periodoActual: d.periodoActual,
+    })),
+  })),
   delitos_rurales: [
     {
       tablaId: 'dr-delitos-tipo',
@@ -708,8 +693,8 @@ const allTablas: Record<string, TablaData[]> = {
 const tablasInicialesEnCero: Record<string, TablaData[]> = Object.fromEntries(
   Object.entries(allTablas).map(([deptCodigo, tablas]) => [
     deptCodigo,
-    // Conservar los valores para D1, D3, D4 y D5 (tablas con datos transcritos reales), cero para los demás
-    deptCodigo === 'd1' || deptCodigo === 'd3' || deptCodigo === 'd4' || deptCodigo === 'd5'
+    // Conservar los valores para D1, D3, D4, D5 y Asuntos Internos (tablas con datos transcritos reales), cero para los demás
+    deptCodigo === 'd1' || deptCodigo === 'd3' || deptCodigo === 'd4' || deptCodigo === 'd5' || deptCodigo === 'asuntos_internos'
       ? tablas
       : tablas.map(tabla => ({
           ...tabla,
