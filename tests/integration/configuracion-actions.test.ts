@@ -127,8 +127,8 @@ describe('configuracion actions integration', () => {
     const periodos = await testDb.db.select().from(configPeriodos);
     const activePeriodo = periodos.find(periodo => periodo.activo);
 
-    assert.equal(activePeriodo?.anteriorLabel, 'Mes estadístico marzo de 2025');
-    assert.equal(activePeriodo?.actualLabel, 'Mes estadístico abril de 2026');
+    assert.equal(activePeriodo?.anteriorLabel, '01/03/25');
+    assert.equal(activePeriodo?.actualLabel, '01/04/26');
     assert.equal(activePeriodo?.anteriorInicio.toISOString().slice(0, 10), '2025-03-01');
     assert.equal(activePeriodo?.actualInicio.toISOString().slice(0, 10), '2026-04-01');
   });

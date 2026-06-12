@@ -28,6 +28,8 @@ const statements = [
     rol rol not null default 'EDITOR',
     color varchar(20) not null default '#1e3a5f',
     activo boolean not null default true,
+    totp_secret varchar(500),
+    totp_enabled boolean not null default false,
     departamento_id uuid references departamentos(id),
     created_at timestamp not null default now(),
     updated_at timestamp not null default now()
