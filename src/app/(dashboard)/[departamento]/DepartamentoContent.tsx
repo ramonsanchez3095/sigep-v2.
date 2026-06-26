@@ -62,6 +62,11 @@ import {
   hasDelitosRuralesStructuredTables,
   type DRRawTable,
 } from '@/lib/delitos-rurales-transform';
+import DigedropDepartamentoView from './DigedropDepartamentoView';
+import {
+  hasDigedropStructuredTables,
+  type DigedropRawTable,
+} from '@/lib/digedrop-transform';
 
 interface TablaData {
   id: string;
@@ -241,6 +246,10 @@ export function DepartamentoContent({
     departamento.codigo === 'delitos_rurales' &&
     hasDelitosRuralesStructuredTables(tablasRenderizadas as unknown as DRRawTable[]);
 
+  const digedropAvanzadoDisponible =
+    departamento.codigo === 'digedrop' &&
+    hasDigedropStructuredTables(tablasRenderizadas as unknown as DigedropRawTable[]);
+
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
   const shieldImg = SHIELD_MAP[departamento.codigo];
   const codigoLabel = departamento.codigo.toUpperCase().replace(/_/g, ' ');
@@ -347,6 +356,12 @@ export function DepartamentoContent({
         </div>
       ) : null}
 
+      {departamento.codigo === 'digedrop' && !digedropAvanzadoDisponible ? (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
+          La vista avanzada de DIGEDROP está integrada en el sistema. Para verla es necesario reinicializar la base de datos con el seed actualizado que incluye las tablas estructuradas de Drogas Peligrosas.
+        </div>
+      ) : null}
+
       {d1AvanzadoDisponible ? (
         <D1DepartamentoView
           departamento={departamento}
@@ -401,6 +416,16 @@ export function DepartamentoContent({
         <DelitosRuralesDepartamentoView
           departamento={departamento}
           tables={tablasState as unknown as DRRawTable[]}
+          periodoAnteriorLabel={periodoAnteriorLabel}
+          periodoActualLabel={periodoActualLabel}
+          onTablesChange={nextTables =>
+            setTablasState(nextTables as unknown as TablaData[])
+          }
+        />
+      ) : digedropAvanzadoDisponible ? (
+        <DigedropDepartamentoView
+          departamento={departamento}
+          tables={tablasState as unknown as DigedropRawTable[]}
           periodoAnteriorLabel={periodoAnteriorLabel}
           periodoActualLabel={periodoActualLabel}
           onTablesChange={nextTables =>

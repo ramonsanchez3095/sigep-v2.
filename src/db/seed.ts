@@ -9,6 +9,7 @@ import { createD4SeedTables } from '../lib/d4-transform';
 import { createD5SeedTables } from '../lib/d5-transform';
 import { createAsuntosInternosSeedTables } from '../lib/asuntos-internos-transform';
 import { createDelitosRuralesSeedTables } from '../lib/delitos-rurales-transform';
+import { createDigedropSeedTables } from '../lib/digedrop-transform';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -531,50 +532,16 @@ const allTablas: Record<string, TablaData[]> = {
       periodoActual: d.periodoActual,
     })),
   })),
-  digedrop: [
-    {
-      tablaId: 'digedrop-sustancias',
-      nombre: 'Sustancias Secuestradas',
-      datos: [
-        {
-          filaId: 'cocaina',
-          label: 'COCAÍNA (kg)',
-          periodoAnterior: 156.5,
-          periodoActual: 189.3,
-        },
-        {
-          filaId: 'marihuana',
-          label: 'MARIHUANA (kg)',
-          periodoAnterior: 2345.8,
-          periodoActual: 2890.4,
-        },
-        {
-          filaId: 'pasta_base',
-          label: 'PASTA BASE (kg)',
-          periodoAnterior: 45.2,
-          periodoActual: 67.8,
-        },
-      ],
-    },
-    {
-      tablaId: 'digedrop-operativos',
-      nombre: 'Operativos Realizados',
-      datos: [
-        {
-          filaId: 'allanamientos',
-          label: 'ALLANAMIENTOS',
-          periodoAnterior: 234,
-          periodoActual: 287,
-        },
-        {
-          filaId: 'detenidos',
-          label: 'DETENIDOS',
-          periodoAnterior: 456,
-          periodoActual: 534,
-        },
-      ],
-    },
-  ],
+  digedrop: createDigedropSeedTables().map(t => ({
+    tablaId: t.tablaId,
+    nombre: t.nombre,
+    datos: t.datos.map(d => ({
+      filaId: d.filaId,
+      label: d.label,
+      periodoAnterior: d.periodoAnterior,
+      periodoActual: d.periodoActual,
+    })),
+  })),
   prevencion_ciudadana: [
     {
       tablaId: 'pc-operativos',
@@ -684,8 +651,14 @@ const allTablas: Record<string, TablaData[]> = {
 const tablasInicialesEnCero: Record<string, TablaData[]> = Object.fromEntries(
   Object.entries(allTablas).map(([deptCodigo, tablas]) => [
     deptCodigo,
-    // Conservar los valores para D1, D3, D4, D5 y Asuntos Internos (tablas con datos transcritos reales), cero para los demás
-    deptCodigo === 'd1' || deptCodigo === 'd3' || deptCodigo === 'd4' || deptCodigo === 'd5' || deptCodigo === 'asuntos_internos' || deptCodigo === 'delitos_rurales'
+    // Conservar los valores para D1, D3, D4, D5, Asuntos Internos, Delitos Rurales y DIGEDROP (tablas con datos reales), cero para los demás
+    deptCodigo === 'd1' ||
+    deptCodigo === 'd3' ||
+    deptCodigo === 'd4' ||
+    deptCodigo === 'd5' ||
+    deptCodigo === 'asuntos_internos' ||
+    deptCodigo === 'delitos_rurales' ||
+    deptCodigo === 'digedrop'
       ? tablas
       : tablas.map(tabla => ({
           ...tabla,
