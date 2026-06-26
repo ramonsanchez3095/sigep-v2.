@@ -67,6 +67,11 @@ import {
   hasDigedropStructuredTables,
   type DigedropRawTable,
 } from '@/lib/digedrop-transform';
+import PrevencionCiudadanaDepartamentoView from './PrevencionCiudadanaDepartamentoView';
+import {
+  hasPrevencionCiudadanaStructuredTables,
+  type PCRawTable,
+} from '@/lib/prevencion-ciudadana-transform';
 
 interface TablaData {
   id: string;
@@ -250,6 +255,10 @@ export function DepartamentoContent({
     departamento.codigo === 'digedrop' &&
     hasDigedropStructuredTables(tablasRenderizadas as unknown as DigedropRawTable[]);
 
+  const prevencionCiudadanaAvanzadoDisponible =
+    departamento.codigo === 'prevencion_ciudadana' &&
+    hasPrevencionCiudadanaStructuredTables(tablasRenderizadas as unknown as PCRawTable[]);
+
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
   const shieldImg = SHIELD_MAP[departamento.codigo];
   const codigoLabel = departamento.codigo.toUpperCase().replace(/_/g, ' ');
@@ -426,6 +435,16 @@ export function DepartamentoContent({
         <DigedropDepartamentoView
           departamento={departamento}
           tables={tablasState as unknown as DigedropRawTable[]}
+          periodoAnteriorLabel={periodoAnteriorLabel}
+          periodoActualLabel={periodoActualLabel}
+          onTablesChange={nextTables =>
+            setTablasState(nextTables as unknown as TablaData[])
+          }
+        />
+      ) : prevencionCiudadanaAvanzadoDisponible ? (
+        <PrevencionCiudadanaDepartamentoView
+          departamento={departamento}
+          tables={tablasState as unknown as PCRawTable[]}
           periodoAnteriorLabel={periodoAnteriorLabel}
           periodoActualLabel={periodoActualLabel}
           onTablesChange={nextTables =>

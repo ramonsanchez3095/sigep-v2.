@@ -10,6 +10,7 @@ import { createD5SeedTables } from '../lib/d5-transform';
 import { createAsuntosInternosSeedTables } from '../lib/asuntos-internos-transform';
 import { createDelitosRuralesSeedTables } from '../lib/delitos-rurales-transform';
 import { createDigedropSeedTables } from '../lib/digedrop-transform';
+import { createPrevencionCiudadanaSeedTables } from '../lib/prevencion-ciudadana-transform';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -542,26 +543,16 @@ const allTablas: Record<string, TablaData[]> = {
       periodoActual: d.periodoActual,
     })),
   })),
-  prevencion_ciudadana: [
-    {
-      tablaId: 'pc-operativos',
-      nombre: 'Operativos de Prevención',
-      datos: [
-        {
-          filaId: 'operativos',
-          label: 'OPERATIVOS REALIZADOS',
-          periodoAnterior: 1234,
-          periodoActual: 1567,
-        },
-        {
-          filaId: 'personas',
-          label: 'PERSONAS IDENTIFICADAS',
-          periodoAnterior: 5678,
-          periodoActual: 6789,
-        },
-      ],
-    },
-  ],
+  prevencion_ciudadana: createPrevencionCiudadanaSeedTables().map(t => ({
+    tablaId: t.tablaId,
+    nombre: t.nombre,
+    datos: t.datos.map(d => ({
+      filaId: d.filaId,
+      label: d.label,
+      periodoAnterior: d.periodoAnterior,
+      periodoActual: d.periodoActual,
+    })),
+  })),
   unidades_especiales: [
     {
       tablaId: 'ue-intervenciones',
