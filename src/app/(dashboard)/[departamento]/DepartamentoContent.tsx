@@ -57,6 +57,11 @@ import {
   hasAsuntosInternosStructuredTables,
   type AIRawTable,
 } from '@/lib/asuntos-internos-transform';
+import DelitosRuralesDepartamentoView from './DelitosRuralesDepartamentoView';
+import {
+  hasDelitosRuralesStructuredTables,
+  type DRRawTable,
+} from '@/lib/delitos-rurales-transform';
 
 interface TablaData {
   id: string;
@@ -232,6 +237,10 @@ export function DepartamentoContent({
     departamento.codigo === 'asuntos_internos' &&
     hasAsuntosInternosStructuredTables(tablasRenderizadas as unknown as AIRawTable[]);
 
+  const delitosRuralesAvanzadoDisponible =
+    departamento.codigo === 'delitos_rurales' &&
+    hasDelitosRuralesStructuredTables(tablasRenderizadas as unknown as DRRawTable[]);
+
   const Icon = ICON_MAP[departamento.codigo] ?? Activity;
   const shieldImg = SHIELD_MAP[departamento.codigo];
   const codigoLabel = departamento.codigo.toUpperCase().replace(/_/g, ' ');
@@ -382,6 +391,16 @@ export function DepartamentoContent({
         <AsuntosInternosDepartamentoView
           departamento={departamento}
           tables={tablasState as unknown as AIRawTable[]}
+          periodoAnteriorLabel={periodoAnteriorLabel}
+          periodoActualLabel={periodoActualLabel}
+          onTablesChange={nextTables =>
+            setTablasState(nextTables as unknown as TablaData[])
+          }
+        />
+      ) : delitosRuralesAvanzadoDisponible ? (
+        <DelitosRuralesDepartamentoView
+          departamento={departamento}
+          tables={tablasState as unknown as DRRawTable[]}
           periodoAnteriorLabel={periodoAnteriorLabel}
           periodoActualLabel={periodoActualLabel}
           onTablesChange={nextTables =>

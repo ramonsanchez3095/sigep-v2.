@@ -8,6 +8,7 @@ import { createD3SeedTables } from '../lib/d3-definition';
 import { createD4SeedTables } from '../lib/d4-transform';
 import { createD5SeedTables } from '../lib/d5-transform';
 import { createAsuntosInternosSeedTables } from '../lib/asuntos-internos-transform';
+import { createDelitosRuralesSeedTables } from '../lib/delitos-rurales-transform';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
@@ -520,26 +521,16 @@ const allTablas: Record<string, TablaData[]> = {
       periodoActual: d.periodoActual,
     })),
   })),
-  delitos_rurales: [
-    {
-      tablaId: 'dr-delitos-tipo',
-      nombre: 'Delitos por Tipo',
-      datos: [
-        {
-          filaId: 'abigeato',
-          label: 'ABIGEATO',
-          periodoAnterior: 234,
-          periodoActual: 198,
-        },
-        {
-          filaId: 'robo_maquinaria',
-          label: 'ROBO DE MAQUINARIA',
-          periodoAnterior: 56,
-          periodoActual: 43,
-        },
-      ],
-    },
-  ],
+  delitos_rurales: createDelitosRuralesSeedTables().map(t => ({
+    tablaId: t.tablaId,
+    nombre: t.nombre,
+    datos: t.datos.map(d => ({
+      filaId: d.filaId,
+      label: d.label,
+      periodoAnterior: d.periodoAnterior,
+      periodoActual: d.periodoActual,
+    })),
+  })),
   digedrop: [
     {
       tablaId: 'digedrop-sustancias',
@@ -694,7 +685,7 @@ const tablasInicialesEnCero: Record<string, TablaData[]> = Object.fromEntries(
   Object.entries(allTablas).map(([deptCodigo, tablas]) => [
     deptCodigo,
     // Conservar los valores para D1, D3, D4, D5 y Asuntos Internos (tablas con datos transcritos reales), cero para los demás
-    deptCodigo === 'd1' || deptCodigo === 'd3' || deptCodigo === 'd4' || deptCodigo === 'd5' || deptCodigo === 'asuntos_internos'
+    deptCodigo === 'd1' || deptCodigo === 'd3' || deptCodigo === 'd4' || deptCodigo === 'd5' || deptCodigo === 'asuntos_internos' || deptCodigo === 'delitos_rurales'
       ? tablas
       : tablas.map(tabla => ({
           ...tabla,
